@@ -45,11 +45,19 @@ function EnquiriesPage() {
   });
 
   const act = useMutation({
-    mutationFn: async ({ id, action, note }: { id: string; action: "qualify" | "disqualify"; note?: string }) => {
+    mutationFn: async ({
+      id,
+      action,
+      note,
+    }: {
+      id: string;
+      action: "qualify" | "disqualify";
+      note?: string;
+    }) => {
       const { error } = await supabase.rpc("update_enquiry_stage", {
         _opportunity_id: id,
         _action: action,
-        _reason: note ?? undefined,
+        ...(note ? { _reason: note } : {}),
       });
       if (error) throw error;
     },
@@ -68,7 +76,10 @@ function EnquiriesPage() {
 
       {isLoading && <LoadingRows />}
       {!isLoading && enquiries.length === 0 && (
-        <EmptyState title="No open enquiries" description="New enquiries appear here as soon as they are captured." />
+        <EmptyState
+          title="No open enquiries"
+          description="New enquiries appear here as soon as they are captured."
+        />
       )}
 
       <div className="space-y-3">
@@ -87,10 +98,16 @@ function EnquiriesPage() {
                   Owner {enquiry.partners?.name ?? "—"} · {titleise(enquiry.urgency)} urgency ·{" "}
                   {formatCurrency(enquiry.estimated_gross_fee)}
                 </p>
-                <p className="text-xs text-muted-foreground">Captured {formatDate(enquiry.created_at)}</p>
+                <p className="text-xs text-muted-foreground">
+                  Captured {formatDate(enquiry.created_at)}
+                </p>
               </div>
               <div className="flex shrink-0 flex-wrap gap-2">
-                <Button size="sm" onClick={() => act.mutate({ id: enquiry.id, action: "qualify" })} disabled={act.isPending}>
+                <Button
+                  size="sm"
+                  onClick={() => act.mutate({ id: enquiry.id, action: "qualify" })}
+                  disabled={act.isPending}
+                >
                   Qualify
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => setReasonFor(enquiry.id)}>
@@ -112,7 +129,9 @@ function EnquiriesPage() {
                     size="sm"
                     variant="destructive"
                     disabled={!reason.trim() || act.isPending}
-                    onClick={() => act.mutate({ id: enquiry.id, action: "disqualify", note: reason })}
+                    onClick={() =>
+                      act.mutate({ id: enquiry.id, action: "disqualify", note: reason })
+                    }
                   >
                     Confirm
                   </Button>

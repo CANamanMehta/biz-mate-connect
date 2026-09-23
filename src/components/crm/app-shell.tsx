@@ -63,7 +63,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
           <div className="min-w-0">
             <p className="truncate font-display text-sm font-semibold text-primary">AOM CRM</p>
-            <p className="truncate text-xs text-muted-foreground">A O Mittal &amp; Associates LLP</p>
+            <p className="truncate text-xs text-muted-foreground">
+              A O Mittal &amp; Associates LLP
+            </p>
           </div>
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto p-3">
@@ -80,9 +82,16 @@ export function AppShell({ children }: { children: ReactNode }) {
           ))}
         </nav>
         <div className="border-t border-border p-3">
-          <p className="truncate px-3 text-sm font-medium text-foreground">{data?.partner.name ?? "Partner"}</p>
+          <p className="truncate px-3 text-sm font-medium text-foreground">
+            {data?.partner.name ?? "Partner"}
+          </p>
           <p className="truncate px-3 text-xs text-muted-foreground">{data?.partner.branch}</p>
-          <Button variant="ghost" size="sm" className="mt-2 w-full justify-start" onClick={handleSignOut}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="mt-2 w-full justify-start"
+            onClick={handleSignOut}
+          >
             <LogOut aria-hidden="true" /> Sign out
           </Button>
         </div>
@@ -159,7 +168,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         )}
       </nav>
 
-      <NewEnquiryDialog open={enquiryOpen} onOpenChange={setEnquiryOpen} currentPartnerId={data?.partner.id ?? null} />
+      <NewEnquiryDialog
+        open={enquiryOpen}
+        onOpenChange={setEnquiryOpen}
+        currentPartnerId={data?.partner.id ?? null}
+      />
     </div>
   );
 }

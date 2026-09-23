@@ -56,7 +56,13 @@ function AdminPage() {
   }, [loadingMe, me, navigate]);
 
   const updatePartner = useMutation({
-    mutationFn: async ({ id, values }: { id: string; values: Record<string, unknown> }) => {
+    mutationFn: async ({
+      id,
+      values,
+    }: {
+      id: string;
+      values: { branch?: string; active?: boolean };
+    }) => {
       const { error } = await supabase.from("partners").update(values).eq("id", id);
       if (error) throw error;
     },
@@ -71,9 +77,14 @@ function AdminPage() {
     mutationFn: async ({ partnerId, role }: { partnerId: string; role: "partner" | "admin" }) => {
       const partner = partners.find((item) => item.id === partnerId);
       if (!partner) throw new Error("Partner not found");
-      const { error: deleteError } = await supabase.from("user_roles").delete().eq("partner_id", partnerId);
+      const { error: deleteError } = await supabase
+        .from("user_roles")
+        .delete()
+        .eq("partner_id", partnerId);
       if (deleteError) throw deleteError;
-      const { error } = await supabase.from("user_roles").insert({ partner_id: partnerId, user_id: partner.user_id, role });
+      const { error } = await supabase
+        .from("user_roles")
+        .insert({ partner_id: partnerId, user_id: partner.user_id, role });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -135,7 +146,10 @@ function AdminPage() {
   });
 
   if (loadingMe || isLoading) return <LoadingRows rows={6} />;
-  if (!me?.isAdmin) return <EmptyState title="Administrators only" description="Ask an AOM administrator for access." />;
+  if (!me?.isAdmin)
+    return (
+      <EmptyState title="Administrators only" description="Ask an AOM administrator for access." />
+    );
 
   return (
     <div className="space-y-6">
@@ -159,24 +173,40 @@ function AdminPage() {
                 </div>
                 <div className="grid gap-3 sm:grid-cols-3">
                   <div className="space-y-1">
-                    <Label htmlFor={`branch-${partner.id}`} className="text-xs">Branch</Label>
+                    <Label htmlFor={`branch-${partner.id}`} className="text-xs">
+                      Branch
+                    </Label>
                     <select
                       id={`branch-${partner.id}`}
                       value={partner.branch}
-                      onChange={(event) => updatePartner.mutate({ id: partner.id, values: { branch: event.target.value } })}
+                      onChange={(event) =>
+                        updatePartner.mutate({
+                          id: partner.id,
+                          values: { branch: event.target.value },
+                        })
+                      }
                       className="h-9 w-full border border-input bg-background px-3 text-sm"
                     >
                       {BRANCH_OPTIONS.map((value) => (
-                        <option key={value} value={value}>{value}</option>
+                        <option key={value} value={value}>
+                          {value}
+                        </option>
                       ))}
                     </select>
                   </div>
                   <div className="space-y-1">
-                    <Label htmlFor={`role-${partner.id}`} className="text-xs">Role</Label>
+                    <Label htmlFor={`role-${partner.id}`} className="text-xs">
+                      Role
+                    </Label>
                     <select
                       id={`role-${partner.id}`}
                       value={role}
-                      onChange={(event) => updateRole.mutate({ partnerId: partner.id, role: event.target.value as "partner" | "admin" })}
+                      onChange={(event) =>
+                        updateRole.mutate({
+                          partnerId: partner.id,
+                          role: event.target.value as "partner" | "admin",
+                        })
+                      }
                       className="h-9 w-full border border-input bg-background px-3 text-sm"
                     >
                       <option value="partner">Partner</option>
@@ -184,11 +214,18 @@ function AdminPage() {
                     </select>
                   </div>
                   <div className="space-y-1">
-                    <Label htmlFor={`active-${partner.id}`} className="text-xs">Status</Label>
+                    <Label htmlFor={`active-${partner.id}`} className="text-xs">
+                      Status
+                    </Label>
                     <select
                       id={`active-${partner.id}`}
                       value={partner.active ? "active" : "inactive"}
-                      onChange={(event) => updatePartner.mutate({ id: partner.id, values: { active: event.target.value === "active" } })}
+                      onChange={(event) =>
+                        updatePartner.mutate({
+                          id: partner.id,
+                          values: { active: event.target.value === "active" },
+                        })
+                      }
                       className="h-9 w-full border border-input bg-background px-3 text-sm"
                     >
                       <option value="active">Active</option>
@@ -196,7 +233,12 @@ function AdminPage() {
                     </select>
                   </div>
                 </div>
-                <Button size="sm" variant="outline" disabled={!partner.active || invite.isPending} onClick={() => invite.mutate(partner.email)}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={!partner.active || invite.isPending}
+                  onClick={() => invite.mutate(partner.email)}
+                >
                   Send invitation
                 </Button>
               </div>
@@ -206,13 +248,30 @@ function AdminPage() {
 
         <TabsContent value="services" className="space-y-3 pt-5">
           <div className="flex flex-col gap-2 sm:flex-row">
-            <Input value={newServiceLine} onChange={(event) => setNewServiceLine(event.target.value)} placeholder="New service line" aria-label="New service line" />
-            <Button disabled={!newServiceLine.trim()} onClick={() => addServiceLine.mutate(newServiceLine)}>Add</Button>
+            <Input
+              value={newServiceLine}
+              onChange={(event) => setNewServiceLine(event.target.value)}
+              placeholder="New service line"
+              aria-label="New service line"
+            />
+            <Button
+              disabled={!newServiceLine.trim()}
+              onClick={() => addServiceLine.mutate(newServiceLine)}
+            >
+              Add
+            </Button>
           </div>
           {serviceLines.map((line) => (
-            <div key={line.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border border-border bg-background p-3">
+            <div
+              key={line.id}
+              className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border border-border bg-background p-3"
+            >
               <p className="truncate text-sm text-foreground">{line.name}</p>
-              <Button size="sm" variant="outline" onClick={() => toggleServiceLine.mutate({ id: line.id, active: !line.active })}>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => toggleServiceLine.mutate({ id: line.id, active: !line.active })}
+              >
                 {line.active ? "Deactivate" : "Activate"}
               </Button>
             </div>
@@ -221,13 +280,27 @@ function AdminPage() {
 
         <TabsContent value="branches" className="space-y-3 pt-5">
           <div className="flex flex-col gap-2 sm:flex-row">
-            <Input value={newBranch} onChange={(event) => setNewBranch(event.target.value)} placeholder="New branch" aria-label="New branch" />
-            <Button disabled={!newBranch.trim()} onClick={() => addBranch.mutate(newBranch)}>Add</Button>
+            <Input
+              value={newBranch}
+              onChange={(event) => setNewBranch(event.target.value)}
+              placeholder="New branch"
+              aria-label="New branch"
+            />
+            <Button disabled={!newBranch.trim()} onClick={() => addBranch.mutate(newBranch)}>
+              Add
+            </Button>
           </div>
           {branches.map((branch) => (
-            <div key={branch.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border border-border bg-background p-3">
+            <div
+              key={branch.id}
+              className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border border-border bg-background p-3"
+            >
               <p className="truncate text-sm text-foreground">{branch.name}</p>
-              <Button size="sm" variant="outline" onClick={() => toggleBranch.mutate({ id: branch.id, active: !branch.active })}>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => toggleBranch.mutate({ id: branch.id, active: !branch.active })}
+              >
                 {branch.active ? "Deactivate" : "Activate"}
               </Button>
             </div>

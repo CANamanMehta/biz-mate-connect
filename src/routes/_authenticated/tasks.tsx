@@ -16,7 +16,10 @@ export const Route = createFileRoute("/_authenticated/tasks")({
   component: () => (
     <div className="space-y-6">
       <PageHeader title="Tasks" description="Follow-ups owned across the team." />
-      <EmptyState title="Task management coming next" description="Follow-ups raised from meetings will appear here." />
+      <EmptyState
+        title="Task management coming next"
+        description="Follow-ups raised from meetings will appear here."
+      />
     </div>
   ),
 });

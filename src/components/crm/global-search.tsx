@@ -52,13 +52,19 @@ export function GlobalSearch() {
       return;
     }
     if (row.organisation_id) {
-      void navigate({ to: "/organisations/$organisationId", params: { organisationId: row.organisation_id } });
+      void navigate({
+        to: "/organisations/$organisationId",
+        params: { organisationId: row.organisation_id },
+      });
     }
   }
 
   return (
     <div ref={containerRef} className="relative w-full">
-      <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+      <Search
+        className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+        aria-hidden="true"
+      />
       <Input
         value={term}
         onChange={(event) => {

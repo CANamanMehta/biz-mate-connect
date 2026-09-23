@@ -40,12 +40,20 @@ export function titleise(value: string | null | undefined) {
 
 export function formatDate(value: string | null | undefined) {
   if (!value) return "—";
-  return new Date(value).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+  return new Date(value).toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 export function formatCurrency(value: number | null | undefined) {
   if (value === null || value === undefined) return "—";
-  return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(value);
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(value);
 }
 
 export function useCurrentPartner() {
