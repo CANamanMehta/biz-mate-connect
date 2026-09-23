@@ -1,5 +1,20 @@
 {
   "version": "7",
   "dialect": "postgresql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1790154661579,
+      "tag": "0000_create_aom_crm_core_schema",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790154721766,
+      "tag": "0001_restrict_role_check_function",
+      "breakpoints": true
+    }
+  ]
 }
