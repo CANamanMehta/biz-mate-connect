@@ -81,8 +81,8 @@ export function NewEnquiryDialog({
       const [name, phoneValue, emailValue] = debouncedKey.split("|");
       const { data, error } = await supabase.rpc("find_enquiry_duplicates", {
         _name: name ?? "",
-        _phone: phoneValue || null,
-        _email: emailValue || null,
+        _phone: phoneValue || undefined,
+        _email: emailValue || undefined,
       });
       if (error) throw error;
       return (data ?? []) as DuplicateRow[];
