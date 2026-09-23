@@ -69,9 +69,61 @@ export type Database = {
           },
         ]
       }
+      app_settings: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
+      branches: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contacts: {
         Row: {
           created_at: string
+          created_by: string | null
           designation: string | null
           email: string | null
           id: string
@@ -86,6 +138,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          created_by?: string | null
           designation?: string | null
           email?: string | null
           id?: string
@@ -100,6 +153,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          created_by?: string | null
           designation?: string | null
           email?: string | null
           id?: string
@@ -113,6 +167,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "contacts_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "contacts_organisation_id_fkey"
             columns: ["organisation_id"]
@@ -128,6 +189,7 @@ export type Database = {
           auto_from_meeting_id: string | null
           cost_type: Database["public"]["Enums"]["lead_cost_type"]
           created_at: string
+          created_by: string | null
           effort_minutes: number | null
           id: string
           incurred_by_partner_id: string | null
@@ -141,6 +203,7 @@ export type Database = {
           auto_from_meeting_id?: string | null
           cost_type: Database["public"]["Enums"]["lead_cost_type"]
           created_at?: string
+          created_by?: string | null
           effort_minutes?: number | null
           id?: string
           incurred_by_partner_id?: string | null
@@ -154,6 +217,7 @@ export type Database = {
           auto_from_meeting_id?: string | null
           cost_type?: Database["public"]["Enums"]["lead_cost_type"]
           created_at?: string
+          created_by?: string | null
           effort_minutes?: number | null
           id?: string
           incurred_by_partner_id?: string | null
@@ -168,6 +232,13 @@ export type Database = {
             columns: ["auto_from_meeting_id"]
             isOneToOne: false
             referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_costs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "partners"
             referencedColumns: ["id"]
           },
           {
@@ -556,6 +627,7 @@ export type Database = {
       opportunity_collaborators: {
         Row: {
           created_at: string
+          created_by: string | null
           id: string
           opportunity_id: string
           partner_id: string
@@ -563,6 +635,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          created_by?: string | null
           id?: string
           opportunity_id: string
           partner_id: string
@@ -570,12 +643,20 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          created_by?: string | null
           id?: string
           opportunity_id?: string
           partner_id?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "opportunity_collaborators_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "opportunity_collaborators_opportunity_id_fkey"
             columns: ["opportunity_id"]
@@ -595,6 +676,7 @@ export type Database = {
       opportunity_service_lines: {
         Row: {
           created_at: string
+          created_by: string | null
           id: string
           opportunity_id: string
           service_line_id: string
@@ -602,6 +684,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          created_by?: string | null
           id?: string
           opportunity_id: string
           service_line_id: string
@@ -609,12 +692,20 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          created_by?: string | null
           id?: string
           opportunity_id?: string
           service_line_id?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "opportunity_service_lines_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "opportunity_service_lines_opportunity_id_fkey"
             columns: ["opportunity_id"]
@@ -634,6 +725,7 @@ export type Database = {
       organisation_services: {
         Row: {
           created_at: string
+          created_by: string | null
           id: string
           organisation_id: string
           service_line_id: string
@@ -642,6 +734,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          created_by?: string | null
           id?: string
           organisation_id: string
           service_line_id: string
@@ -650,6 +743,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          created_by?: string | null
           id?: string
           organisation_id?: string
           service_line_id?: string
@@ -657,6 +751,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "organisation_services_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "organisation_services_organisation_id_fkey"
             columns: ["organisation_id"]
@@ -802,6 +903,7 @@ export type Database = {
           component: Database["public"]["Enums"]["allocation_component"]
           computed_amount: number
           created_at: string
+          created_by: string | null
           id: string
           note: string | null
           opportunity_id: string
@@ -816,6 +918,7 @@ export type Database = {
           component: Database["public"]["Enums"]["allocation_component"]
           computed_amount?: number
           created_at?: string
+          created_by?: string | null
           id?: string
           note?: string | null
           opportunity_id: string
@@ -830,6 +933,7 @@ export type Database = {
           component?: Database["public"]["Enums"]["allocation_component"]
           computed_amount?: number
           created_at?: string
+          created_by?: string | null
           id?: string
           note?: string | null
           opportunity_id?: string
@@ -840,6 +944,13 @@ export type Database = {
           {
             foreignKeyName: "revenue_allocations_beneficiary_partner_id_fkey"
             columns: ["beneficiary_partner_id"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "revenue_allocations_created_by_fkey"
+            columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "partners"
             referencedColumns: ["id"]
@@ -884,6 +995,7 @@ export type Database = {
         Row: {
           completed_at: string | null
           created_at: string
+          created_by: string | null
           due_date: string
           escalated: boolean
           id: string
@@ -902,6 +1014,7 @@ export type Database = {
         Insert: {
           completed_at?: string | null
           created_at?: string
+          created_by?: string | null
           due_date: string
           escalated?: boolean
           id?: string
@@ -920,6 +1033,7 @@ export type Database = {
         Update: {
           completed_at?: string | null
           created_at?: string
+          created_by?: string | null
           due_date?: string
           escalated?: boolean
           id?: string
@@ -936,6 +1050,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tasks_meeting_id_fkey"
             columns: ["meeting_id"]
@@ -1006,12 +1127,39 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_opportunity: {
+        Args: { _opportunity_id: string }
+        Returns: boolean
+      }
+      can_edit_opportunity: {
+        Args: { _opportunity_id: string }
+        Returns: boolean
+      }
+      current_partner_id: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      is_active_partner: { Args: never; Returns: boolean }
+      is_admin: { Args: never; Returns: boolean }
+      link_current_partner: {
+        Args: never
+        Returns: {
+          partner_id: string
+          partner_name: string
+          partner_role: Database["public"]["Enums"]["app_role"]
+        }[]
+      }
+      restricted_pursuit_notices: {
+        Args: never
+        Returns: {
+          notice: string
+          organisation_id: string
+          owner_name: string
+        }[]
       }
     }
     Enums: {

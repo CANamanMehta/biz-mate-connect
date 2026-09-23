@@ -15,6 +15,34 @@
       "when": 1790154721766,
       "tag": "0001_restrict_role_check_function",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790158936008,
+      "tag": "0002_secure_crm_access_and_partner_linking",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790159003486,
+      "tag": "0003_add_admin_configuration_and_harden_access",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790159143678,
+      "tag": "0004_add_restricted_pursuit_notices",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790159200312,
+      "tag": "0005_revoke_anonymous_helper_execution",
+      "breakpoints": true
     }
   ]
 }
