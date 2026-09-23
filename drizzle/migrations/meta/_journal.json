@@ -50,6 +50,13 @@
       "when": 1790159698761,
       "tag": "0006_add_crm_workflow_functions",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1790161086512,
+      "tag": "0007_refine_create_enquiry_signature",
+      "breakpoints": true
     }
   ]
 }

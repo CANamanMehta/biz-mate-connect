@@ -49,7 +49,7 @@ function EnquiriesPage() {
       const { error } = await supabase.rpc("update_enquiry_stage", {
         _opportunity_id: id,
         _action: action,
-        _reason: note ?? undefined,
+        ...(note ? { _reason: note } : {}),
       });
       if (error) throw error;
     },

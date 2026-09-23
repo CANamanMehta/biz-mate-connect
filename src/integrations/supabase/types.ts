@@ -1144,15 +1144,15 @@ export type Database = {
           _acquisition_source: Database["public"]["Enums"]["acquisition_source"]
           _city?: string
           _contact_name: string
-          _email: string
+          _email?: string
           _estimated_gross_fee?: number
           _expected_close_date?: string
           _industry?: string
           _notes?: string
-          _organisation_id: string
+          _organisation_id?: string
           _organisation_name: string
           _owner_partner_id: string
-          _phone: string
+          _phone?: string
           _referral_contact_id?: string
           _service_line_ids: string[]
           _urgency?: Database["public"]["Enums"]["enquiry_urgency"]

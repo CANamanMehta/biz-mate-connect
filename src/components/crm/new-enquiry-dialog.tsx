@@ -156,9 +156,18 @@ export function NewEnquiryDialog({
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!source) return toast.error("Choose how this enquiry came in.");
-    if (selectedServices.length === 0) return toast.error("Choose at least one service line.");
-    if (!owner) return toast.error("Choose an owner.");
+    if (!source) {
+      toast.error("Choose how this enquiry came in.");
+      return;
+    }
+    if (selectedServices.length === 0) {
+      toast.error("Choose at least one service line.");
+      return;
+    }
+    if (!owner) {
+      toast.error("Choose an owner.");
+      return;
+    }
     createEnquiry.mutate();
   }
 

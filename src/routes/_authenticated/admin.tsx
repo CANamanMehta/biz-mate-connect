@@ -56,7 +56,7 @@ function AdminPage() {
   }, [loadingMe, me, navigate]);
 
   const updatePartner = useMutation({
-    mutationFn: async ({ id, values }: { id: string; values: Record<string, unknown> }) => {
+    mutationFn: async ({ id, values }: { id: string; values: { branch?: string; active?: boolean } }) => {
       const { error } = await supabase.from("partners").update(values).eq("id", id);
       if (error) throw error;
     },
