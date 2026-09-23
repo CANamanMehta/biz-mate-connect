@@ -122,22 +122,22 @@ export function NewEnquiryDialog({
   const createEnquiry = useMutation({
     mutationFn: async () => {
       const { data, error } = await supabase.rpc("create_enquiry", {
-        _organisation_id: organisationId,
         _organisation_name: organisationName.trim(),
         _contact_name: contactName.trim(),
-        _phone: phone.trim() || null,
-        _email: email.trim() || null,
         _acquisition_source: source as AcquisitionSource,
         _service_line_ids: selectedServices,
         _owner_partner_id: owner,
         _estimated_gross_fee: fee ? Number(fee) : 0,
-        _expected_close_date: closeDate || null,
         _urgency: urgency,
-        _industry: industry.trim() || null,
-        _city: city.trim() || null,
-        _referral_contact_id: referralContactId || null,
-        _acquired_by_partner_id: acquiredBy || null,
-        _notes: notes.trim() || null,
+        ...(organisationId ? { _organisation_id: organisationId } : {}),
+        ...(phone.trim() ? { _phone: phone.trim() } : {}),
+        ...(email.trim() ? { _email: email.trim() } : {}),
+        ...(closeDate ? { _expected_close_date: closeDate } : {}),
+        ...(industry.trim() ? { _industry: industry.trim() } : {}),
+        ...(city.trim() ? { _city: city.trim() } : {}),
+        ...(referralContactId ? { _referral_contact_id: referralContactId } : {}),
+        ...(acquiredBy ? { _acquired_by_partner_id: acquiredBy } : {}),
+        ...(notes.trim() ? { _notes: notes.trim() } : {}),
       });
       if (error) throw error;
       return (data ?? [])[0] as { organisation_id: string } | undefined;
