@@ -16,7 +16,10 @@ export const Route = createFileRoute("/_authenticated/reports")({
   component: () => (
     <div className="space-y-6">
       <PageHeader title="Reports" description="Conversion, revenue and activity insight." />
-      <EmptyState title="Reporting coming next" description="Reports will build on the pipeline and revenue data." />
+      <EmptyState
+        title="Reporting coming next"
+        description="Reports will build on the pipeline and revenue data."
+      />
     </div>
   ),
 });

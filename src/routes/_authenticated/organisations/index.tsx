@@ -11,9 +11,15 @@ export const Route = createFileRoute("/_authenticated/organisations/")({
   head: () => ({
     meta: [
       { title: "Organisations | AOM CRM" },
-      { name: "description", content: "All AOM client and prospect organisations with owners and activity." },
+      {
+        name: "description",
+        content: "All AOM client and prospect organisations with owners and activity.",
+      },
       { property: "og:title", content: "Organisations | AOM CRM" },
-      { property: "og:description", content: "Browse and filter AOM organisations by status, branch and industry." },
+      {
+        property: "og:description",
+        content: "Browse and filter AOM organisations by status, branch and industry.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -52,14 +58,18 @@ function OrganisationsPage() {
   });
 
   const industries = useMemo(
-    () => Array.from(new Set(organisations.map((org) => org.industry).filter(Boolean) as string[])).sort(),
+    () =>
+      Array.from(
+        new Set(organisations.map((org) => org.industry).filter(Boolean) as string[]),
+      ).sort(),
     [organisations],
   );
 
   const filtered = organisations.filter((org) => {
     const matchesSearch = !search || org.name.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = !status || org.status === status;
-    const matchesBranch = !branch || org.home_branch === branch || org.relationship_owner_branch === branch;
+    const matchesBranch =
+      !branch || org.home_branch === branch || org.relationship_owner_branch === branch;
     const matchesIndustry = !industry || org.industry === industry;
     return matchesSearch && matchesStatus && matchesBranch && matchesIndustry;
   });
@@ -73,33 +83,65 @@ function OrganisationsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Organisations" description="Every client and prospect relationship across AOM." />
+      <PageHeader
+        title="Organisations"
+        description="Every client and prospect relationship across AOM."
+      />
 
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-        <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by name" aria-label="Search organisations" />
-        <select value={status} onChange={(event) => setStatus(event.target.value)} aria-label="Filter by status" className="h-9 border border-input bg-background px-3 text-sm">
+        <Input
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Search by name"
+          aria-label="Search organisations"
+        />
+        <select
+          value={status}
+          onChange={(event) => setStatus(event.target.value)}
+          aria-label="Filter by status"
+          className="h-9 border border-input bg-background px-3 text-sm"
+        >
           <option value="">All statuses</option>
           {["prospect", "client", "dormant"].map((value) => (
-            <option key={value} value={value}>{titleise(value)}</option>
+            <option key={value} value={value}>
+              {titleise(value)}
+            </option>
           ))}
         </select>
-        <select value={branch} onChange={(event) => setBranch(event.target.value)} aria-label="Filter by branch" className="h-9 border border-input bg-background px-3 text-sm">
+        <select
+          value={branch}
+          onChange={(event) => setBranch(event.target.value)}
+          aria-label="Filter by branch"
+          className="h-9 border border-input bg-background px-3 text-sm"
+        >
           <option value="">All branches</option>
           {branches.map((item) => (
-            <option key={item.id} value={item.name}>{item.name}</option>
+            <option key={item.id} value={item.name}>
+              {item.name}
+            </option>
           ))}
         </select>
-        <select value={industry} onChange={(event) => setIndustry(event.target.value)} aria-label="Filter by industry" className="h-9 border border-input bg-background px-3 text-sm">
+        <select
+          value={industry}
+          onChange={(event) => setIndustry(event.target.value)}
+          aria-label="Filter by industry"
+          className="h-9 border border-input bg-background px-3 text-sm"
+        >
           <option value="">All industries</option>
           {industries.map((value) => (
-            <option key={value} value={value}>{value}</option>
+            <option key={value} value={value}>
+              {value}
+            </option>
           ))}
         </select>
       </div>
 
       {isLoading && <LoadingRows />}
       {!isLoading && filtered.length === 0 && (
-        <EmptyState title="No organisations match" description="Adjust the filters or capture a new enquiry." />
+        <EmptyState
+          title="No organisations match"
+          description="Adjust the filters or capture a new enquiry."
+        />
       )}
 
       {filtered.length > 0 && (
@@ -119,12 +161,20 @@ function OrganisationsPage() {
               <tbody>
                 {filtered.map((org) => {
                   const open = org.opportunities?.filter((item) => item.status === "open") ?? [];
-                  const last = open.map((item) => item.last_activity_date).filter(Boolean).sort().at(-1);
+                  const last = open
+                    .map((item) => item.last_activity_date)
+                    .filter(Boolean)
+                    .sort()
+                    .at(-1);
                   const notice = notices.find((item) => item.organisation_id === org.id);
                   return (
                     <tr key={org.id} className="border-t border-border">
                       <td className="px-4 py-3">
-                        <Link to="/organisations/$organisationId" params={{ organisationId: org.id }} className="font-medium text-primary hover:underline">
+                        <Link
+                          to="/organisations/$organisationId"
+                          params={{ organisationId: org.id }}
+                          className="font-medium text-primary hover:underline"
+                        >
                           {org.name}
                         </Link>
                         {notice && <p className="text-xs text-accent">{notice.notice}</p>}
@@ -133,7 +183,9 @@ function OrganisationsPage() {
                       <td className="px-4 py-3">{titleise(org.status)}</td>
                       <td className="px-4 py-3 text-muted-foreground">{ownerLabel(org)}</td>
                       <td className="px-4 py-3">{open.length}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{formatDate(last ?? null)}</td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {formatDate(last ?? null)}
+                      </td>
                     </tr>
                   );
                 })}
@@ -144,7 +196,11 @@ function OrganisationsPage() {
           <div className="space-y-3 lg:hidden">
             {filtered.map((org) => {
               const open = org.opportunities?.filter((item) => item.status === "open") ?? [];
-              const last = open.map((item) => item.last_activity_date).filter(Boolean).sort().at(-1);
+              const last = open
+                .map((item) => item.last_activity_date)
+                .filter(Boolean)
+                .sort()
+                .at(-1);
               const notice = notices.find((item) => item.organisation_id === org.id);
               return (
                 <Link

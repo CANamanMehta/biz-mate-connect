@@ -5,12 +5,24 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
-import { ACQUISITION_SOURCES, titleise, usePartners, useServiceLines, type AcquisitionSource } from "@/lib/crm";
+import {
+  ACQUISITION_SOURCES,
+  titleise,
+  usePartners,
+  useServiceLines,
+  type AcquisitionSource,
+} from "@/lib/crm";
 import { cn } from "@/lib/utils";
 
 type DuplicateRow = {
@@ -65,7 +77,10 @@ export function NewEnquiryDialog({
   }, [open, currentPartnerId]);
 
   useEffect(() => {
-    const timeout = setTimeout(() => setDebouncedKey(`${organisationName.trim()}|${phone.trim()}|${email.trim()}`), 320);
+    const timeout = setTimeout(
+      () => setDebouncedKey(`${organisationName.trim()}|${phone.trim()}|${email.trim()}`),
+      320,
+    );
     return () => clearTimeout(timeout);
   }, [organisationName, phone, email]);
 
@@ -93,7 +108,10 @@ export function NewEnquiryDialog({
     queryKey: ["organisation-contacts", organisationId],
     enabled: Boolean(organisationId),
     queryFn: async () => {
-      const { data, error } = await supabase.from("contacts").select("id, name").eq("organisation_id", organisationId!);
+      const { data, error } = await supabase
+        .from("contacts")
+        .select("id, name")
+        .eq("organisation_id", organisationId!);
       if (error) throw error;
       return data;
     },
@@ -148,7 +166,10 @@ export function NewEnquiryDialog({
       onOpenChange(false);
       reset();
       if (result?.organisation_id) {
-        void navigate({ to: "/organisations/$organisationId", params: { organisationId: result.organisation_id } });
+        void navigate({
+          to: "/organisations/$organisationId",
+          params: { organisationId: result.organisation_id },
+        });
       }
     },
     onError: (error: Error) => toast.error(error.message || "Could not save this enquiry."),
@@ -184,7 +205,9 @@ export function NewEnquiryDialog({
       <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display text-primary">New enquiry</DialogTitle>
-          <DialogDescription>Capture the essentials now — details can follow later.</DialogDescription>
+          <DialogDescription>
+            Capture the essentials now — details can follow later.
+          </DialogDescription>
         </DialogHeader>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -209,12 +232,17 @@ export function NewEnquiryDialog({
           {showDuplicates && (
             <div className="space-y-3 border-l-2 border-accent bg-accent/5 p-3">
               <p className="flex items-center gap-2 text-sm font-medium text-foreground">
-                <TriangleAlert className="size-4 text-accent" aria-hidden="true" /> Possible matches found
+                <TriangleAlert className="size-4 text-accent" aria-hidden="true" /> Possible matches
+                found
               </p>
               {duplicates.map((row) => (
-                <div key={row.organisation_id} className="space-y-2 border-t border-border/60 pt-2 first:border-t-0 first:pt-0">
+                <div
+                  key={row.organisation_id}
+                  className="space-y-2 border-t border-border/60 pt-2 first:border-t-0 first:pt-0"
+                >
                   <p className="text-sm text-foreground">
-                    Possible match: {row.organisation_name} — owner {row.owner_name}, stage {titleise(row.stage) ?? "—"}
+                    Possible match: {row.organisation_name} — owner {row.owner_name}, stage{" "}
+                    {titleise(row.stage) ?? "—"}
                   </p>
                   {row.has_other_owner_open_pursuit && (
                     <p className="text-sm font-medium text-destructive">
@@ -232,7 +260,12 @@ export function NewEnquiryDialog({
                     >
                       Use this organisation
                     </Button>
-                    <Button type="button" size="sm" variant="outline" onClick={() => setDismissedDuplicates(true)}>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setDismissedDuplicates(true)}
+                    >
                       Create new anyway
                     </Button>
                   </div>
@@ -244,11 +277,22 @@ export function NewEnquiryDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="enquiry-contact">Contact name</Label>
-              <Input id="enquiry-contact" value={contactName} onChange={(event) => setContactName(event.target.value)} required />
+              <Input
+                id="enquiry-contact"
+                value={contactName}
+                onChange={(event) => setContactName(event.target.value)}
+                required
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="enquiry-phone">Phone</Label>
-              <Input id="enquiry-phone" value={phone} onChange={(event) => setPhone(event.target.value)} inputMode="tel" required />
+              <Input
+                id="enquiry-phone"
+                value={phone}
+                onChange={(event) => setPhone(event.target.value)}
+                inputMode="tel"
+                required
+              />
             </div>
           </div>
 
@@ -302,7 +346,9 @@ export function NewEnquiryDialog({
                       aria-pressed={selected}
                       onClick={() =>
                         setSelectedServices((values) =>
-                          selected ? values.filter((value) => value !== line.id) : [...values, line.id],
+                          selected
+                            ? values.filter((value) => value !== line.id)
+                            : [...values, line.id],
                         )
                       }
                       className={cn(
@@ -324,7 +370,10 @@ export function NewEnquiryDialog({
             onClick={() => setShowMore((value) => !value)}
             className="flex items-center gap-1.5 text-sm font-medium text-accent"
           >
-            <ChevronDown className={cn("size-4 transition-transform", showMore && "rotate-180")} aria-hidden="true" />
+            <ChevronDown
+              className={cn("size-4 transition-transform", showMore && "rotate-180")}
+              aria-hidden="true"
+            />
             More details
           </button>
 
@@ -333,22 +382,40 @@ export function NewEnquiryDialog({
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="enquiry-email">Email</Label>
-                  <Input id="enquiry-email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} />
+                  <Input
+                    id="enquiry-email"
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="enquiry-fee">Estimated gross fee (INR)</Label>
-                  <Input id="enquiry-fee" type="number" min="0" value={fee} onChange={(event) => setFee(event.target.value)} />
+                  <Input
+                    id="enquiry-fee"
+                    type="number"
+                    min="0"
+                    value={fee}
+                    onChange={(event) => setFee(event.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="enquiry-close">Expected close date</Label>
-                  <Input id="enquiry-close" type="date" value={closeDate} onChange={(event) => setCloseDate(event.target.value)} />
+                  <Input
+                    id="enquiry-close"
+                    type="date"
+                    value={closeDate}
+                    onChange={(event) => setCloseDate(event.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="enquiry-urgency">Urgency</Label>
                   <select
                     id="enquiry-urgency"
                     value={urgency}
-                    onChange={(event) => setUrgency(event.target.value as (typeof URGENCIES)[number])}
+                    onChange={(event) =>
+                      setUrgency(event.target.value as (typeof URGENCIES)[number])
+                    }
                     className="h-9 w-full border border-input bg-background px-3 text-sm"
                   >
                     {URGENCIES.map((value) => (
@@ -360,11 +427,19 @@ export function NewEnquiryDialog({
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="enquiry-industry">Industry</Label>
-                  <Input id="enquiry-industry" value={industry} onChange={(event) => setIndustry(event.target.value)} />
+                  <Input
+                    id="enquiry-industry"
+                    value={industry}
+                    onChange={(event) => setIndustry(event.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="enquiry-city">City</Label>
-                  <Input id="enquiry-city" value={city} onChange={(event) => setCity(event.target.value)} />
+                  <Input
+                    id="enquiry-city"
+                    value={city}
+                    onChange={(event) => setCity(event.target.value)}
+                  />
                 </div>
                 {organisationId && referralContacts.length > 0 && (
                   <div className="space-y-2">
@@ -403,7 +478,12 @@ export function NewEnquiryDialog({
               </div>
               <div className="space-y-2">
                 <Label htmlFor="enquiry-notes">Notes</Label>
-                <Textarea id="enquiry-notes" rows={3} value={notes} onChange={(event) => setNotes(event.target.value)} />
+                <Textarea
+                  id="enquiry-notes"
+                  rows={3}
+                  value={notes}
+                  onChange={(event) => setNotes(event.target.value)}
+                />
               </div>
             </div>
           )}
@@ -412,7 +492,11 @@ export function NewEnquiryDialog({
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90" disabled={createEnquiry.isPending}>
+            <Button
+              type="submit"
+              className="bg-accent text-accent-foreground hover:bg-accent/90"
+              disabled={createEnquiry.isPending}
+            >
               {createEnquiry.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
               Save enquiry
             </Button>
