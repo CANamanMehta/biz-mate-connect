@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedContactsRouteImport } from './routes/_authenticated/contacts'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedEnquiriesRouteImport } from './routes/_authenticated/enquiries'
@@ -21,6 +22,7 @@ import { Route as AuthenticatedPipelineRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
 import { Route as AuthenticatedOrganisationsIndexRouteImport } from './routes/_authenticated/organisations/index'
+import { Route as AuthenticatedOrganisationsOrganisationIdRouteImport } from './routes/_authenticated/organisations/$organisationId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +42,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedContactsRoute = AuthenticatedContactsRouteImport.update({
   id: '/contacts',
@@ -82,11 +89,18 @@ const AuthenticatedOrganisationsIndexRoute =
     path: '/organisations/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedOrganisationsOrganisationIdRoute =
+  AuthenticatedOrganisationsOrganisationIdRouteImport.update({
+    id: '/organisations/$organisationId',
+    path: '/organisations/$organisationId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/contacts': typeof AuthenticatedContactsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/enquiries': typeof AuthenticatedEnquiriesRoute
@@ -94,12 +108,14 @@ export interface FileRoutesByFullPath {
   '/pipeline': typeof AuthenticatedPipelineRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/tasks': typeof AuthenticatedTasksRoute
+  '/organisations/$organisationId': typeof AuthenticatedOrganisationsOrganisationIdRoute
   '/organisations/': typeof AuthenticatedOrganisationsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/contacts': typeof AuthenticatedContactsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/enquiries': typeof AuthenticatedEnquiriesRoute
@@ -107,6 +123,7 @@ export interface FileRoutesByTo {
   '/pipeline': typeof AuthenticatedPipelineRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/tasks': typeof AuthenticatedTasksRoute
+  '/organisations/$organisationId': typeof AuthenticatedOrganisationsOrganisationIdRoute
   '/organisations': typeof AuthenticatedOrganisationsIndexRoute
 }
 export interface FileRoutesById {
@@ -115,6 +132,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/contacts': typeof AuthenticatedContactsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/enquiries': typeof AuthenticatedEnquiriesRoute
@@ -122,6 +140,7 @@ export interface FileRoutesById {
   '/_authenticated/pipeline': typeof AuthenticatedPipelineRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
+  '/_authenticated/organisations/$organisationId': typeof AuthenticatedOrganisationsOrganisationIdRoute
   '/_authenticated/organisations/': typeof AuthenticatedOrganisationsIndexRoute
 }
 export interface FileRouteTypes {
@@ -130,6 +149,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/admin'
     | '/contacts'
     | '/dashboard'
     | '/enquiries'
@@ -137,12 +157,14 @@ export interface FileRouteTypes {
     | '/pipeline'
     | '/reports'
     | '/tasks'
+    | '/organisations/$organisationId'
     | '/organisations/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/admin'
     | '/contacts'
     | '/dashboard'
     | '/enquiries'
@@ -150,6 +172,7 @@ export interface FileRouteTypes {
     | '/pipeline'
     | '/reports'
     | '/tasks'
+    | '/organisations/$organisationId'
     | '/organisations'
   id:
     | '__root__'
@@ -157,6 +180,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/admin'
     | '/_authenticated/contacts'
     | '/_authenticated/dashboard'
     | '/_authenticated/enquiries'
@@ -164,6 +188,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pipeline'
     | '/_authenticated/reports'
     | '/_authenticated/tasks'
+    | '/_authenticated/organisations/$organisationId'
     | '/_authenticated/organisations/'
   fileRoutesById: FileRoutesById
 }
@@ -203,6 +228,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/contacts': {
       id: '/_authenticated/contacts'
@@ -260,10 +292,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrganisationsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/organisations/$organisationId': {
+      id: '/_authenticated/organisations/$organisationId'
+      path: '/organisations/$organisationId'
+      fullPath: '/organisations/$organisationId'
+      preLoaderRoute: typeof AuthenticatedOrganisationsOrganisationIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedContactsRoute: typeof AuthenticatedContactsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedEnquiriesRoute: typeof AuthenticatedEnquiriesRoute
@@ -271,10 +311,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPipelineRoute: typeof AuthenticatedPipelineRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
+  AuthenticatedOrganisationsOrganisationIdRoute: typeof AuthenticatedOrganisationsOrganisationIdRoute
   AuthenticatedOrganisationsIndexRoute: typeof AuthenticatedOrganisationsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedContactsRoute: AuthenticatedContactsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedEnquiriesRoute: AuthenticatedEnquiriesRoute,
@@ -282,6 +324,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPipelineRoute: AuthenticatedPipelineRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,
+  AuthenticatedOrganisationsOrganisationIdRoute:
+    AuthenticatedOrganisationsOrganisationIdRoute,
   AuthenticatedOrganisationsIndexRoute: AuthenticatedOrganisationsIndexRoute,
 }
 
