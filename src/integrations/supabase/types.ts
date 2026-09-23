@@ -502,6 +502,7 @@ export type Database = {
           status: Database["public"]["Enums"]["opportunity_status"]
           title: string
           updated_at: string
+          urgency: Database["public"]["Enums"]["enquiry_urgency"]
         }
         Insert: {
           acquired_by_partner_id?: string | null
@@ -540,6 +541,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["opportunity_status"]
           title: string
           updated_at?: string
+          urgency?: Database["public"]["Enums"]["enquiry_urgency"]
         }
         Update: {
           acquired_by_partner_id?: string | null
@@ -578,6 +580,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["opportunity_status"]
           title?: string
           updated_at?: string
+          urgency?: Database["public"]["Enums"]["enquiry_urgency"]
         }
         Relationships: [
           {
@@ -1135,7 +1138,42 @@ export type Database = {
         Args: { _opportunity_id: string }
         Returns: boolean
       }
+      create_enquiry: {
+        Args: {
+          _acquired_by_partner_id?: string
+          _acquisition_source: Database["public"]["Enums"]["acquisition_source"]
+          _city?: string
+          _contact_name: string
+          _email: string
+          _estimated_gross_fee?: number
+          _expected_close_date?: string
+          _industry?: string
+          _notes?: string
+          _organisation_id: string
+          _organisation_name: string
+          _owner_partner_id: string
+          _phone: string
+          _referral_contact_id?: string
+          _service_line_ids: string[]
+          _urgency?: Database["public"]["Enums"]["enquiry_urgency"]
+        }
+        Returns: {
+          contact_id: string
+          opportunity_id: string
+          organisation_id: string
+        }[]
+      }
       current_partner_id: { Args: never; Returns: string }
+      find_enquiry_duplicates: {
+        Args: { _email?: string; _name: string; _phone?: string }
+        Returns: {
+          has_other_owner_open_pursuit: boolean
+          organisation_id: string
+          organisation_name: string
+          owner_name: string
+          stage: Database["public"]["Enums"]["opportunity_stage"]
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1153,6 +1191,7 @@ export type Database = {
           partner_role: Database["public"]["Enums"]["app_role"]
         }[]
       }
+      normalise_business_name: { Args: { _value: string }; Returns: string }
       restricted_pursuit_notices: {
         Args: never
         Returns: {
@@ -1160,6 +1199,20 @@ export type Database = {
           organisation_id: string
           owner_name: string
         }[]
+      }
+      search_crm: {
+        Args: { _query: string }
+        Returns: {
+          organisation_id: string
+          result_id: string
+          result_type: string
+          subtitle: string
+          title: string
+        }[]
+      }
+      update_enquiry_stage: {
+        Args: { _action: string; _opportunity_id: string; _reason?: string }
+        Returns: undefined
       }
     }
     Enums: {
@@ -1192,6 +1245,7 @@ export type Database = {
         | "influencer"
         | "gatekeeper"
         | "other"
+      enquiry_urgency: "low" | "medium" | "high"
       execution_mode:
         | "solo"
         | "collaboration"
@@ -1390,6 +1444,7 @@ export const Constants = {
         "gatekeeper",
         "other",
       ],
+      enquiry_urgency: ["low", "medium", "high"],
       execution_mode: [
         "solo",
         "collaboration",
