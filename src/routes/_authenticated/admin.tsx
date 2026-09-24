@@ -215,14 +215,116 @@ function AdminPage() {
         </TabsList>
 
         <TabsContent value="partners" className="space-y-3 pt-5">
+          <div className="space-y-3 border border-border bg-muted/40 p-4">
+            <p className="font-medium text-foreground">Add a partner</p>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <Input
+                value={newPartner.name}
+                onChange={(event) => setNewPartner({ ...newPartner, name: event.target.value })}
+                placeholder="Full name"
+                aria-label="Partner name"
+              />
+              <Input
+                value={newPartner.email}
+                onChange={(event) => setNewPartner({ ...newPartner, email: event.target.value })}
+                placeholder="Email address"
+                type="email"
+                aria-label="Partner email"
+              />
+              <select
+                value={newPartner.branch}
+                onChange={(event) => setNewPartner({ ...newPartner, branch: event.target.value })}
+                className="h-9 w-full border border-input bg-background px-3 text-sm"
+                aria-label="Branch"
+              >
+                {BRANCH_OPTIONS.map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={newPartner.role}
+                onChange={(event) =>
+                  setNewPartner({ ...newPartner, role: event.target.value as "partner" | "admin" })
+                }
+                className="h-9 w-full border border-input bg-background px-3 text-sm"
+                aria-label="Role"
+              >
+                <option value="partner">Partner</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <Button
+              disabled={
+                !newPartner.name.trim() || !newPartner.email.trim() || addPartner.isPending
+              }
+              onClick={() => addPartner.mutate(newPartner)}
+            >
+              Add partner &amp; send invitation
+            </Button>
+          </div>
+
           {partners.map((partner) => {
             const role = roles.find((item) => item.partner_id === partner.id)?.role ?? "partner";
+            const isEditing = editingPartner === partner.id;
             return (
               <div key={partner.id} className="space-y-3 border border-border bg-background p-4">
-                <div className="min-w-0">
-                  <p className="truncate font-medium text-foreground">{partner.name}</p>
-                  <p className="truncate text-sm text-muted-foreground">{partner.email}</p>
-                </div>
+                {isEditing ? (
+                  <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto_auto]">
+                    <Input
+                      value={editValues.name}
+                      onChange={(event) =>
+                        setEditValues({ ...editValues, name: event.target.value })
+                      }
+                      aria-label="Edit name"
+                    />
+                    <Input
+                      value={editValues.email}
+                      onChange={(event) =>
+                        setEditValues({ ...editValues, email: event.target.value })
+                      }
+                      type="email"
+                      aria-label="Edit email"
+                    />
+                    <Button
+                      size="sm"
+                      disabled={!editValues.name.trim() || !editValues.email.trim()}
+                      onClick={() => {
+                        updatePartner.mutate({
+                          id: partner.id,
+                          values: {
+                            name: editValues.name.trim(),
+                            email: editValues.email.trim().toLowerCase(),
+                          },
+                        });
+                        setEditingPartner(null);
+                      }}
+                    >
+                      Save
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setEditingPartner(null)}>
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-foreground">{partner.name}</p>
+                      <p className="truncate text-sm text-muted-foreground">{partner.email}</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setEditingPartner(partner.id);
+                        setEditValues({ name: partner.name, email: partner.email });
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  </div>
+                )}
                 <div className="grid gap-3 sm:grid-cols-3">
                   <div className="space-y-1">
                     <Label htmlFor={`branch-${partner.id}`} className="text-xs">
