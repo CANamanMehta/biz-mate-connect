@@ -61,7 +61,7 @@ function AdminPage() {
       values,
     }: {
       id: string;
-      values: { branch?: string; active?: boolean };
+      values: { branch?: string; active?: boolean; name?: string; email?: string };
     }) => {
       const { error } = await supabase.from("partners").update(values).eq("id", id);
       if (error) throw error;
@@ -99,6 +99,49 @@ function AdminPage() {
       sendInvite({ data: { email, redirectTo: `${window.location.origin}/reset-password` } }),
     onSuccess: () => toast.success("Invitation sent"),
     onError: (error: Error) => toast.error(error.message || "Could not send this invitation."),
+  });
+
+  const addPartner = useMutation({
+    mutationFn: async (values: {
+      name: string;
+      email: string;
+      branch: string;
+      role: "partner" | "admin";
+    }) => {
+      const email = values.email.trim().toLowerCase();
+      const { data: existing } = await supabase
+        .from("partners")
+        .select("id")
+        .ilike("email", email)
+        .maybeSingle();
+      if (existing) throw new Error("A partner with this email already exists.");
+
+      const { data: created, error } = await supabase
+        .from("partners")
+        .insert({
+          name: values.name.trim(),
+          email,
+          branch: values.branch,
+          role: values.role,
+        })
+        .select("id, user_id")
+        .single();
+      if (error) throw error;
+
+      const { error: roleError } = await supabase
+        .from("user_roles")
+        .insert({ partner_id: created.id, user_id: created.user_id, role: values.role });
+      if (roleError) throw roleError;
+
+      await sendInvite({ data: { email, redirectTo: `${window.location.origin}/reset-password` } });
+    },
+    onSuccess: () => {
+      setNewPartner({ name: "", email: "", branch: "Jaipur-HO", role: "partner" });
+      toast.success("Partner added and invitation sent");
+      void queryClient.invalidateQueries({ queryKey: ["partners"] });
+      void queryClient.invalidateQueries({ queryKey: ["user-roles"] });
+    },
+    onError: (error: Error) => toast.error(error.message || "Could not add this partner."),
   });
 
   const addServiceLine = useMutation({
