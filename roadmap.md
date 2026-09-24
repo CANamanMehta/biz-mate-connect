@@ -9,3 +9,6 @@
 - [x] Build Enquiries, Organisations, Contacts, and organisation 360° pages
 - [x] Build admin management and placeholder routes
 - [ ] Verify signed-in screens end to end (blocked: no partner account has accepted an invitation yet)
+
+- [x] Pipeline page (board, list, parked & lost, stale limits)
+- [ ] Conversion flow (placeholder dialog for now)
