@@ -40,6 +40,14 @@ function AdminPage() {
 
   const [newServiceLine, setNewServiceLine] = useState("");
   const [newBranch, setNewBranch] = useState("");
+  const [newPartner, setNewPartner] = useState({
+    name: "",
+    email: "",
+    branch: "Jaipur-HO",
+    role: "partner" as "partner" | "admin",
+  });
+  const [editingPartner, setEditingPartner] = useState<string | null>(null);
+  const [editValues, setEditValues] = useState({ name: "", email: "" });
 
   const { data: roles = [] } = useQuery({
     queryKey: ["user-roles"],
@@ -116,13 +124,14 @@ function AdminPage() {
         .maybeSingle();
       if (existing) throw new Error("A partner with this email already exists.");
 
+      // Placeholder auth id — replaced with the real login when the partner accepts the invite.
       const { data: created, error } = await supabase
         .from("partners")
         .insert({
           name: values.name.trim(),
           email,
           branch: values.branch,
-          role: values.role,
+          user_id: crypto.randomUUID(),
         })
         .select("id, user_id")
         .single();
