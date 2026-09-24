@@ -475,7 +475,7 @@ function ListView({ opps, thresholds, onStage, onAction }: { opps: Opp[] } & Car
       <table className="w-full text-sm">
         <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
           <tr>
-            <Th k="org">Organisation</Th><th className="p-3">Services</Th>
+            <Th k="org">Organisation</Th><th className="p-3">Services</th>
             <Th k="stage">Stage</Th><Th k="fee">Fee</Th><Th k="probability">Prob.</Th>
             <Th k="days">Days in stage</Th><Th k="next">Next action</Th><Th k="owner">Owner</Th><th className="p-3" />
           </tr>
