@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { EmptyState, LoadingRows, PageHeader } from "@/components/crm/page-header";
+import { SharingTemplatesAdmin } from "@/components/crm/sharing-templates-admin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -212,6 +213,7 @@ function AdminPage() {
           <TabsTrigger value="partners">Partners</TabsTrigger>
           <TabsTrigger value="services">Service lines</TabsTrigger>
           <TabsTrigger value="branches">Branches</TabsTrigger>
+          <TabsTrigger value="templates">Sharing templates</TabsTrigger>
         </TabsList>
 
         <TabsContent value="partners" className="space-y-3 pt-5">
@@ -459,6 +461,10 @@ function AdminPage() {
               </Button>
             </div>
           ))}
+        </TabsContent>
+
+        <TabsContent value="templates" className="space-y-3 pt-5">
+          <SharingTemplatesAdmin />
         </TabsContent>
       </Tabs>
     </div>

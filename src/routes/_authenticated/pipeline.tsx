@@ -332,11 +332,11 @@ function FilterSelect({ label, value, onChange, options }: { label: string; valu
 }
 
 function OrgLink({ opp }: { opp: Opp }) {
-  return opp.organisations ? (
-    <Link to="/organisations/$organisationId" params={{ organisationId: opp.organisations.id }} className="hover:underline">
-      {opp.organisations.name}
+  return (
+    <Link to="/opportunities/$opportunityId" params={{ opportunityId: opp.id }} className="hover:underline">
+      {opp.organisations?.name ?? opp.title}
     </Link>
-  ) : <span>{opp.title}</span>;
+  );
 }
 
 type CardProps = {
