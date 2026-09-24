@@ -57,6 +57,13 @@
       "when": 1790161086512,
       "tag": "0007_refine_create_enquiry_signature",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790230005146,
+      "tag": "0008_fix_link_current_partner_ambiguity",
+      "breakpoints": true
     }
   ]
 }
