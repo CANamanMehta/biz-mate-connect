@@ -390,7 +390,7 @@ function OrganisationDetailPage() {
           {opportunities.length === 0 && <EmptyState title="No opportunities yet" />}
           {opportunities.map((opportunity) => (
             <div key={opportunity.id} className="border border-border bg-background p-4">
-              <p className="font-medium text-foreground">{opportunity.title}</p>
+              <Link to="/opportunities/$opportunityId" params={{ opportunityId: opportunity.id }} className="font-medium text-foreground hover:underline">{opportunity.title}</Link>
               <p className="mt-1 text-sm text-muted-foreground">
                 {titleise(opportunity.stage)} · {titleise(opportunity.status)} ·{" "}
                 {opportunity.probability}% · {formatCurrency(opportunity.estimated_gross_fee)} ·{" "}
