@@ -1191,6 +1191,14 @@ export type Database = {
           partner_role: Database["public"]["Enums"]["app_role"]
         }[]
       }
+      move_opportunity_stage: {
+        Args: {
+          _opportunity_id: string
+          _probability: number
+          _stage: Database["public"]["Enums"]["opportunity_stage"]
+        }
+        Returns: undefined
+      }
       normalise_business_name: { Args: { _value: string }; Returns: string }
       restricted_pursuit_notices: {
         Args: never
@@ -1209,6 +1217,16 @@ export type Database = {
           subtitle: string
           title: string
         }[]
+      }
+      set_opportunity_status: {
+        Args: {
+          _action: string
+          _lost_reason?: Database["public"]["Enums"]["lost_reason"]
+          _note?: string
+          _opportunity_id: string
+          _revisit_date?: string
+        }
+        Returns: undefined
       }
       update_enquiry_stage: {
         Args: { _action: string; _opportunity_id: string; _reason?: string }
