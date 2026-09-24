@@ -231,7 +231,7 @@ function InlineNumber({ value, onSave }: { value: number | null; onSave: (v: num
   );
 }
 
-function Collaborators({ opp, partners, meId, onChange, ownerName }: { opp: Opp; partners: Partner[]; meId?: string; onChange: () => void; ownerName?: string }) {
+function Collaborators({ opp, partners, meId, onChange, ownerName }: { opp: Opp; partners: Partner[]; meId: string | undefined; onChange: () => void; ownerName: string | undefined }) {
   const add = useMutation({
     mutationFn: async (partnerId: string) => {
       const { error } = await supabase.from("opportunity_collaborators").insert({ opportunity_id: opp.id, partner_id: partnerId, created_by: meId ?? null });
@@ -422,7 +422,7 @@ function RelationshipOwner({ opp, partners, onChange }: { opp: Opp; partners: Pa
 
 type TemplateRowDef = { who: string; component: Enums["allocation_component"]; base: Enums["allocation_base"]; share_pct: number; note?: string };
 
-function RevenueSplit({ opp, partners, meId, onChange }: { opp: Opp; partners: Partner[]; meId?: string; onChange: () => void }) {
+function RevenueSplit({ opp, partners, meId, onChange }: { opp: Opp; partners: Partner[]; meId: string | undefined; onChange: () => void }) {
   const qc = useQueryClient();
   const { data: branches = [] } = useBranches();
   const [pending, setPending] = useState<{ name: string; rows: TemplateRowDef[] } | null>(null);
