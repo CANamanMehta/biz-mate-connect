@@ -994,6 +994,42 @@ export type Database = {
         }
         Relationships: []
       }
+      sharing_templates: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          rows: Json
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          rows?: Json
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          rows?: Json
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           completed_at: string | null
@@ -1130,6 +1166,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_sharing_template: {
+        Args: { _opportunity_id: string; _rows: Json; _template_name: string }
+        Returns: undefined
+      }
       can_access_opportunity: {
         Args: { _opportunity_id: string }
         Returns: boolean
@@ -1225,6 +1265,15 @@ export type Database = {
           _note?: string
           _opportunity_id: string
           _revisit_date?: string
+        }
+        Returns: undefined
+      }
+      set_relationship_owner_from_opportunity: {
+        Args: {
+          _branch?: string
+          _opportunity_id: string
+          _partner_id?: string
+          _type: Database["public"]["Enums"]["relationship_owner_type"]
         }
         Returns: undefined
       }
