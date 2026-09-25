@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
 import { ContactBadges } from "@/routes/_authenticated/contacts";
+import { InteractionTimeline, LogInteractionButton } from "@/components/crm/interactions";
 import { EmptyState, LoadingRows, PageHeader } from "@/components/crm/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -194,6 +195,7 @@ function OrganisationDetailPage() {
           titleise(organisation.relationship_owner_type) ??
           "Unassigned"
         }`}
+        actions={<LogInteractionButton organisationId={organisationId} />}
       />
 
       <Tabs defaultValue="overview">
@@ -400,18 +402,8 @@ function OrganisationDetailPage() {
           ))}
         </TabsContent>
 
-        <TabsContent value="meetings" className="space-y-3 pt-5">
-          {meetings.length === 0 && <EmptyState title="No meetings recorded" />}
-          {meetings.map((meeting) => (
-            <div key={meeting.id} className="border border-border bg-background p-4">
-              <p className="font-medium text-foreground">
-                {titleise(meeting.type)} · {formatDate(meeting.meeting_date)}
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Next: {meeting.next_step} by {formatDate(meeting.next_step_date)}
-              </p>
-            </div>
-          ))}
+        <TabsContent value="meetings" className="pt-5">
+          <InteractionTimeline organisationId={organisationId} />
         </TabsContent>
 
         <TabsContent value="tasks" className="space-y-3 pt-5">
