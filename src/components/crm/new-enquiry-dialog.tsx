@@ -22,6 +22,7 @@ import {
   usePartners,
   useServiceLines,
   type AcquisitionSource,
+  stageLabel,
 } from "@/lib/crm";
 import { cn } from "@/lib/utils";
 

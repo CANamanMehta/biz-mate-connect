@@ -11,10 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DocumentsPanel } from "@/components/crm/documents";
-import { stageLabel } from "@/lib/crm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { CONTACT_ROLES, formatCurrency, formatDate, titleise, useServiceLines } from "@/lib/crm";
+import { CONTACT_ROLES, formatCurrency, formatDate, stageLabel, titleise, useServiceLines } from "@/lib/crm";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/organisations/$organisationId")({
