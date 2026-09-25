@@ -309,6 +309,73 @@ export type Database = {
           },
         ]
       }
+      documents: {
+        Row: {
+          created_at: string
+          doc_type: Database["public"]["Enums"]["document_type"]
+          file_name: string
+          file_path: string
+          id: string
+          notes: string | null
+          opportunity_id: string | null
+          organisation_id: string
+          updated_at: string
+          uploaded_at: string
+          uploaded_by: string | null
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          doc_type?: Database["public"]["Enums"]["document_type"]
+          file_name: string
+          file_path: string
+          id?: string
+          notes?: string | null
+          opportunity_id?: string | null
+          organisation_id: string
+          updated_at?: string
+          uploaded_at?: string
+          uploaded_by?: string | null
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          doc_type?: Database["public"]["Enums"]["document_type"]
+          file_name?: string
+          file_path?: string
+          id?: string
+          notes?: string | null
+          opportunity_id?: string | null
+          organisation_id?: string
+          updated_at?: string
+          uploaded_at?: string
+          uploaded_by?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_organisation_id_fkey"
+            columns: ["organisation_id"]
+            isOneToOne: false
+            referencedRelation: "organisations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_costs: {
         Row: {
           amount_inr: number | null
@@ -478,6 +545,7 @@ export type Database = {
           objections: string | null
           opportunity_id: string | null
           organisation_id: string
+          outcome: string | null
           requirements_identified: string | null
           summary: string | null
           type: Database["public"]["Enums"]["interaction_type"]
@@ -499,6 +567,7 @@ export type Database = {
           objections?: string | null
           opportunity_id?: string | null
           organisation_id: string
+          outcome?: string | null
           requirements_identified?: string | null
           summary?: string | null
           type: Database["public"]["Enums"]["interaction_type"]
@@ -520,6 +589,7 @@ export type Database = {
           objections?: string | null
           opportunity_id?: string | null
           organisation_id?: string
+          outcome?: string | null
           requirements_identified?: string | null
           summary?: string | null
           type?: Database["public"]["Enums"]["interaction_type"]
@@ -622,10 +692,13 @@ export type Database = {
           probability: number
           referral_contact_id: string | null
           requirements: string | null
+          research_due_date: string | null
+          research_status: Database["public"]["Enums"]["research_status"]
           sharing_template: string | null
           stage: Database["public"]["Enums"]["opportunity_stage"]
           stage_changed_at: string
           status: Database["public"]["Enums"]["opportunity_status"]
+          target_rationale: string | null
           title: string
           updated_at: string
           urgency: Database["public"]["Enums"]["enquiry_urgency"]
@@ -661,10 +734,13 @@ export type Database = {
           probability?: number
           referral_contact_id?: string | null
           requirements?: string | null
+          research_due_date?: string | null
+          research_status?: Database["public"]["Enums"]["research_status"]
           sharing_template?: string | null
           stage?: Database["public"]["Enums"]["opportunity_stage"]
           stage_changed_at?: string
           status?: Database["public"]["Enums"]["opportunity_status"]
+          target_rationale?: string | null
           title: string
           updated_at?: string
           urgency?: Database["public"]["Enums"]["enquiry_urgency"]
@@ -700,10 +776,13 @@ export type Database = {
           probability?: number
           referral_contact_id?: string | null
           requirements?: string | null
+          research_due_date?: string | null
+          research_status?: Database["public"]["Enums"]["research_status"]
           sharing_template?: string | null
           stage?: Database["public"]["Enums"]["opportunity_stage"]
           stage_changed_at?: string
           status?: Database["public"]["Enums"]["opportunity_status"]
+          target_rationale?: string | null
           title?: string
           updated_at?: string
           urgency?: Database["public"]["Enums"]["enquiry_urgency"]
@@ -1354,6 +1433,19 @@ export type Database = {
           organisation_id: string
         }[]
       }
+      create_target: {
+        Args: {
+          _city?: string
+          _industry?: string
+          _organisation_id?: string
+          _organisation_name: string
+          _owner_partner_id: string
+          _research_due_date?: string
+          _service_line_ids?: string[]
+          _target_rationale?: string
+        }
+        Returns: string
+      }
       cross_sell_report: {
         Args: never
         Returns: {
@@ -1414,6 +1506,9 @@ export type Database = {
           _objections?: string
           _opportunity_id?: string
           _organisation_id: string
+          _outcome?: string
+          _outcome_date?: string
+          _outcome_reason?: string
           _partner_ids?: string[]
           _requirements?: string
           _summary?: string
@@ -1499,6 +1594,7 @@ export type Database = {
         | "walk_in"
         | "cold_outreach"
         | "social"
+        | "outbound_research"
       allocation_base: "gross" | "net"
       allocation_component:
         | "firm_base"
@@ -1518,6 +1614,12 @@ export type Database = {
         | "gatekeeper"
         | "other"
       cross_sell_status: "suggested" | "pursued" | "dismissed"
+      document_type:
+        | "research_report"
+        | "proposal"
+        | "engagement_letter"
+        | "nda"
+        | "other"
       enquiry_urgency: "low" | "medium" | "high"
       execution_mode:
         | "solo"
@@ -1536,7 +1638,11 @@ export type Database = {
         | "timing"
         | "other"
       opportunity_stage:
+        | "target"
+        | "research"
+        | "outreach"
         | "enquiry"
+        | "first_meeting"
         | "qualified_lead"
         | "meeting_discovery"
         | "proposal"
@@ -1550,6 +1656,7 @@ export type Database = {
         | "not_relevant"
       organisation_status: "prospect" | "client" | "dormant"
       relationship_owner_type: "partner" | "branch" | "ho"
+      research_status: "not_started" | "in_progress" | "done"
       task_priority: "low" | "medium" | "high"
       task_source:
         | "manual"
@@ -1696,6 +1803,7 @@ export const Constants = {
         "walk_in",
         "cold_outreach",
         "social",
+        "outbound_research",
       ],
       allocation_base: ["gross", "net"],
       allocation_component: [
@@ -1718,6 +1826,13 @@ export const Constants = {
         "other",
       ],
       cross_sell_status: ["suggested", "pursued", "dismissed"],
+      document_type: [
+        "research_report",
+        "proposal",
+        "engagement_letter",
+        "nda",
+        "other",
+      ],
       enquiry_urgency: ["low", "medium", "high"],
       execution_mode: [
         "solo",
@@ -1738,7 +1853,11 @@ export const Constants = {
         "other",
       ],
       opportunity_stage: [
+        "target",
+        "research",
+        "outreach",
         "enquiry",
+        "first_meeting",
         "qualified_lead",
         "meeting_discovery",
         "proposal",
@@ -1754,6 +1873,7 @@ export const Constants = {
       ],
       organisation_status: ["prospect", "client", "dormant"],
       relationship_owner_type: ["partner", "branch", "ho"],
+      research_status: ["not_started", "in_progress", "done"],
       task_priority: ["low", "medium", "high"],
       task_source: [
         "manual",

@@ -43,7 +43,10 @@ import {
   useServiceLines,
   type OpportunityStage,
   type Partner,
+  STAGES,
+  stageLabel,
 } from "@/lib/crm";
+import { DocumentsPanel } from "@/components/crm/documents";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/opportunities/$opportunityId")({
@@ -64,14 +67,6 @@ type Enums = Database["public"]["Enums"];
 type OppUpdate = Database["public"]["Tables"]["opportunities"]["Update"];
 type Allocation = Database["public"]["Tables"]["revenue_allocations"]["Row"];
 
-const STAGES: { value: OpportunityStage; label: string; probability: number }[] = [
-  { value: "enquiry", label: "Enquiry", probability: 10 },
-  { value: "qualified_lead", label: "Qualified Lead", probability: 30 },
-  { value: "meeting_discovery", label: "Meeting/Discovery", probability: 40 },
-  { value: "proposal", label: "Proposal", probability: 50 },
-  { value: "negotiation", label: "Negotiation", probability: 75 },
-  { value: "converted", label: "Converted", probability: 100 },
-];
 const EXEC_MODES: Enums["execution_mode"][] = ["solo", "collaboration", "ho_executed", "branch_executed", "split_ho_branch"];
 const BENEFICIARY: Enums["beneficiary_type"][] = ["firm_mp", "partner", "branch", "ho"];
 const COMPONENTS: Enums["allocation_component"][] = ["firm_base", "referral_acquisition", "execution", "branch_profit_share", "custom"];
@@ -180,13 +175,14 @@ function OpportunityPage() {
 
       <Tabs defaultValue="overview">
         <TabsList className="flex h-auto w-full flex-wrap justify-start">
-          {["overview", "meetings", "tasks", "revenue", "costs", "history"].map((t) => (
+          {["overview", "meetings", "tasks", "documents", "revenue", "costs", "history"].map((t) => (
             <TabsTrigger key={t} value={t}>{t === "revenue" ? "Revenue Split" : titleise(t)}</TabsTrigger>
           ))}
         </TabsList>
         <TabsContent value="overview" className="pt-5"><Overview opp={opp} partners={partners} saveField={saveField} onChange={refresh} /></TabsContent>
         <TabsContent value="meetings" className="pt-5"><InteractionTimeline opportunityId={opp.id} /></TabsContent>
         <TabsContent value="tasks" className="pt-5"><Tasks id={opp.id} partners={partners} /></TabsContent>
+        <TabsContent value="documents" className="pt-5"><DocumentsPanel organisationId={opp.organisation_id} opportunityId={opp.id} /></TabsContent>
         <TabsContent value="revenue" className="pt-5"><RevenueSplit opp={opp} partners={partners} meId={me?.partner.id} onChange={refresh} /></TabsContent>
         <TabsContent value="costs" className="pt-5"><EmptyState title="Costs coming soon" description="Lead costs for this opportunity will appear here." /></TabsContent>
         <TabsContent value="history" className="pt-5"><History id={opp.id} partners={partners} /></TabsContent>
@@ -337,6 +333,20 @@ function Overview({ opp, partners, saveField, onChange }: { opp: Opp; partners: 
           </select>
         </Field>
         <RelationshipOwner opp={opp} partners={partners} onChange={onChange} />
+      </div>
+
+      <div className="grid gap-4 border bg-muted/30 p-3 sm:grid-cols-3">
+        <Field label="Research status">
+          <select className={selectCls} value={opp.research_status} onChange={(e) => saveField({ research_status: e.target.value as Enums["research_status"] }, "research status")}>
+            <option value="not_started">Not started</option>
+            <option value="in_progress">In progress</option>
+            <option value="done">Done</option>
+          </select>
+        </Field>
+        <Field label="Research due">
+          <Input type="date" className="h-9" defaultValue={opp.research_due_date ?? ""} key={opp.research_due_date ?? "none"} onBlur={(e) => e.target.value !== (opp.research_due_date ?? "") && saveField({ research_due_date: e.target.value || null }, "research due date")} />
+        </Field>
+        <Field label="Target rationale (why this company, which services)"><InlineText multiline value={opp.target_rationale} onSave={(v) => saveField({ target_rationale: v }, "target rationale")} /></Field>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">

@@ -20,6 +20,7 @@ export const ACQUISITION_SOURCES: { value: AcquisitionSource; label: string }[] 
   { value: "walk_in", label: "Walk-in" },
   { value: "cold_outreach", label: "Cold outreach" },
   { value: "social", label: "Social" },
+  { value: "outbound_research", label: "Outbound - partner research" },
 ];
 
 export const CONTACT_ROLES = [
@@ -108,8 +109,25 @@ export function useBranches() {
   });
 }
 
-export type StaleThresholds = { default_days: number; late_stage_days: number; warning_days: number };
-export const DEFAULT_STALE_THRESHOLDS: StaleThresholds = { default_days: 14, late_stage_days: 10, warning_days: 3 };
+export const STAGES: { value: OpportunityStage; label: string; probability: number }[] = [
+  { value: "target", label: "Target", probability: 5 },
+  { value: "research", label: "Research", probability: 5 },
+  { value: "outreach", label: "Outreach", probability: 10 },
+  { value: "first_meeting", label: "First Meeting", probability: 25 },
+  { value: "qualified_lead", label: "Qualified Lead", probability: 40 },
+  { value: "proposal", label: "Proposal", probability: 50 },
+  { value: "negotiation", label: "Negotiation", probability: 75 },
+  { value: "converted", label: "Converted", probability: 100 },
+];
+export const EARLY_STAGES: OpportunityStage[] = ["target", "research"];
+export const stageLabel = (s: string | null | undefined) =>
+  STAGES.find((x) => x.value === s)?.label ?? (s === "enquiry" ? "Outreach" : s === "meeting_discovery" ? "First Meeting" : titleise(s));
+/** Weighted value excluding Target and Research. */
+export const weightedValue = (o: { stage: OpportunityStage; estimated_gross_fee: number | null; probability: number }) =>
+  EARLY_STAGES.includes(o.stage) ? 0 : (Number(o.estimated_gross_fee ?? 0) * o.probability) / 100;
+
+export type StaleThresholds = { default_days: number; late_stage_days: number; warning_days: number; early_stage_days: number };
+export const DEFAULT_STALE_THRESHOLDS: StaleThresholds = { default_days: 14, late_stage_days: 10, warning_days: 3, early_stage_days: 21 };
 const DAY_MS = 86_400_000;
 export const daysSince = (d: string | null | undefined) =>
   d ? Math.floor((Date.now() - new Date(d).getTime()) / DAY_MS) : 0;
@@ -129,11 +147,29 @@ export function staleLevelFor(
   t: StaleThresholds,
 ): "red" | "amber" | null {
   if (o.stage === "converted") return null;
-  const limit = o.stage === "proposal" || o.stage === "negotiation" ? t.late_stage_days : t.default_days;
+  const limit = EARLY_STAGES.includes(o.stage)
+    ? t.early_stage_days
+    : o.stage === "proposal" || o.stage === "negotiation"
+      ? t.late_stage_days
+      : t.default_days;
   const days = daysSince(o.last_activity_date ?? o.stage_changed_at);
   if (days > limit) return "red";
   if (days > limit - t.warning_days) return "amber";
   return null;
+}
+
+/** Map of opportunity id → document count. */
+export function useDocumentCounts() {
+  return useQuery({
+    queryKey: ["documents", "counts"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("documents").select("opportunity_id").not("opportunity_id", "is", null);
+      if (error) throw error;
+      const m = new Map<string, number>();
+      for (const r of data ?? []) m.set(r.opportunity_id as string, (m.get(r.opportunity_id as string) ?? 0) + 1);
+      return m;
+    },
+  });
 }
 
 /** Local YYYY-MM-DD, offset by days. */

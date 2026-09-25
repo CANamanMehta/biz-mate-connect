@@ -1,7 +1,7 @@
 import { LogInteractionDialog } from "@/components/crm/interactions";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpDown, KanbanSquare, List, Lock, MoreHorizontal, Settings2 } from "lucide-react";
+import { ArrowUpDown, KanbanSquare, List, Lock, MoreHorizontal, Paperclip, Settings2 } from "lucide-react";
 import { useEffect, useMemo, useState, type DragEvent } from "react";
 import { toast } from "sonner";
 
@@ -48,6 +48,13 @@ import {
   useOpenTaskOpportunityIds,
   usePartners,
   useServiceLines,
+  useDocumentCounts,
+  STAGES,
+  DEFAULT_STALE_THRESHOLDS as DEFAULT_THRESHOLDS,
+  staleLevelFor,
+  stageLabel,
+  weightedValue,
+  type StaleThresholds as Thresholds,
   type OpportunityStage,
 } from "@/lib/crm";
 import { cn } from "@/lib/utils";
@@ -58,7 +65,7 @@ export const Route = createFileRoute("/_authenticated/pipeline")({
       { title: "Pipeline | AOM CRM" },
       { name: "description", content: "AOM opportunity pipeline across every stage." },
       { property: "og:title", content: "Pipeline | AOM CRM" },
-      { property: "og:description", content: "Track AOM opportunities from enquiry through conversion." },
+      { property: "og:description", content: "Track AOM opportunities from target through conversion." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -68,19 +75,9 @@ export const Route = createFileRoute("/_authenticated/pipeline")({
 
 type LostReason = Database["public"]["Enums"]["lost_reason"];
 
-const STAGES: { value: OpportunityStage; label: string; probability: number }[] = [
-  { value: "enquiry", label: "Enquiry", probability: 10 },
-  { value: "qualified_lead", label: "Qualified Lead", probability: 30 },
-  { value: "meeting_discovery", label: "Meeting/Discovery", probability: 40 },
-  { value: "proposal", label: "Proposal", probability: 50 },
-  { value: "negotiation", label: "Negotiation", probability: 75 },
-  { value: "converted", label: "Converted", probability: 100 },
-];
 const LOST_REASONS: LostReason[] = ["price", "competitor", "no_budget", "no_decision", "in_house", "timing", "other"];
 const DAY = 86_400_000;
 
-type Thresholds = { default_days: number; late_stage_days: number; warning_days: number };
-const DEFAULT_THRESHOLDS: Thresholds = { default_days: 14, late_stage_days: 10, warning_days: 3 };
 
 const SELECT =
   "id, title, stage, status, probability, estimated_gross_fee, owner_partner_id, acquisition_source, is_restricted, stage_changed_at, last_activity_date, next_action, next_action_date, on_hold_revisit_date, lost_reason, lost_note, updated_at, organisations(id, name), partners!opportunities_owner_partner_id_fkey(id, name, branch), opportunity_service_lines(service_line_id, service_lines(name))";
@@ -96,14 +93,7 @@ const daysSince = (d: string | null) => (d ? Math.floor((Date.now() - new Date(d
 const initials = (name?: string | null) =>
   (name ?? "?").split(/\s+/).map((p) => p[0]).slice(0, 2).join("").toUpperCase();
 
-function staleLevel(o: Opp, t: Thresholds): "red" | "amber" | null {
-  if (o.stage === "converted") return null;
-  const limit = o.stage === "proposal" || o.stage === "negotiation" ? t.late_stage_days : t.default_days;
-  const days = daysSince(o.last_activity_date ?? o.stage_changed_at);
-  if (days > limit) return "red";
-  if (days > limit - t.warning_days) return "amber";
-  return null;
-}
+const staleLevel = (o: Opp, t: Thresholds) => staleLevelFor(o, t);
 
 type Pending =
   | { kind: "move"; opp: Opp; stage: OpportunityStage; probability: number }
@@ -169,7 +159,7 @@ function PipelinePage() {
   const summary = {
     count: active.length,
     gross: active.reduce((s, o) => s + Number(o.estimated_gross_fee ?? 0), 0),
-    weighted: active.reduce((s, o) => s + (Number(o.estimated_gross_fee ?? 0) * o.probability) / 100, 0),
+    weighted: active.reduce((s, o) => s + weightedValue(o), 0),
     stale: active.filter((o) => staleLevel(o, thresholds) === "red").length,
   };
 
@@ -238,7 +228,7 @@ function PipelinePage() {
             {[
               ["Open opportunities", String(summary.count)],
               ["Gross pipeline", formatCurrency(summary.gross)],
-              ["Weighted value", formatCurrency(summary.weighted)],
+              ["Weighted value (excl. Target/Research)", formatCurrency(summary.weighted)],
               ["Stale cards", String(summary.stale)],
             ].map(([label, value]) => (
               <div key={label} className="bg-card px-4 py-3">
@@ -294,7 +284,7 @@ function PipelinePage() {
                     <tr key={o.id} className="border-t">
                       <td className="p-3 font-medium"><OrgLink opp={o} /></td>
                       <td className="p-3"><Badge variant={o.status === "on_hold" ? "secondary" : "outline"}>{titleise(o.status)}</Badge></td>
-                      <td className="p-3">{titleise(o.stage)}</td>
+                      <td className="p-3">{stageLabel(o.stage)}</td>
                       <td className="max-w-xs p-3 text-muted-foreground">
                         {o.status === "on_hold" ? `Revisit ${formatDate(o.on_hold_revisit_date)}` : [o.lost_reason && titleise(o.lost_reason), o.lost_note].filter(Boolean).join(" — ") || "—"}
                       </td>
@@ -376,6 +366,8 @@ function OppCard({ opp, thresholds, onStage, onAction }: { opp: Opp } & CardProp
   const stale = staleLevel(opp, thresholds);
   const { data: withTask } = useOpenTaskOpportunityIds();
   const noNext = opp.stage !== "converted" && withTask !== undefined && !withTask.has(opp.id);
+  const { data: docCounts } = useDocumentCounts();
+  const docs = docCounts?.get(opp.id) ?? 0;
   return (
     <div
       draggable
@@ -403,7 +395,10 @@ function OppCard({ opp, thresholds, onStage, onAction }: { opp: Opp } & CardProp
         </div>
       )}
       <div className="flex items-center justify-between text-sm">
-        <span className="font-semibold">{formatCurrency(Number(opp.estimated_gross_fee))}</span>
+        <span className="flex items-center gap-2 font-semibold">
+          {Number(opp.estimated_gross_fee) > 0 ? formatCurrency(Number(opp.estimated_gross_fee)) : <span className="text-xs font-normal text-muted-foreground">No fee yet</span>}
+          {docs > 0 && <span className="flex items-center gap-0.5 text-xs font-normal text-muted-foreground" title={`${docs} documents`}><Paperclip className="size-3" />{docs}</span>}
+        </span>
         <span className="text-xs text-muted-foreground">{opp.probability}% · {daysSince(opp.stage_changed_at)}d in stage</span>
       </div>
       <div className="flex items-center justify-between gap-2 border-t pt-2 text-xs">
@@ -499,7 +494,7 @@ function ListView({ opps, thresholds, onStage, onAction }: { opps: Opp[] } & Car
               <tr key={o.id} className={cn("border-t border-l-4", stale === "red" ? "border-l-destructive" : stale === "amber" ? "border-l-warning" : "border-l-transparent")}>
                 <td className="p-3 font-medium"><span className="flex items-center gap-1">{o.is_restricted && <Lock className="size-3.5 text-accent" />}<OrgLink opp={o} /></span></td>
                 <td className="p-3 text-xs text-muted-foreground">{o.opportunity_service_lines.map((s) => s.service_lines?.name).join(", ") || "—"}</td>
-                <td className="p-3">{STAGES.find((s) => s.value === o.stage)?.label}</td>
+                <td className="p-3">{stageLabel(o.stage)}</td>
                 <td className="p-3 whitespace-nowrap">{formatCurrency(Number(o.estimated_gross_fee))}</td>
                 <td className="p-3">{o.probability}%</td>
                 <td className="p-3">{daysSince(o.stage_changed_at)}</td>
@@ -625,6 +620,7 @@ function ThresholdDialog({ open, onOpenChange, value }: { open: boolean; onOpenC
   const fields: [keyof Thresholds, string][] = [
     ["default_days", "Red after (days without activity)"],
     ["late_stage_days", "Red after — Proposal & Negotiation"],
+    ["early_stage_days", "Red after — Target & Research"],
     ["warning_days", "Amber warning (days before limit)"],
   ];
   return (

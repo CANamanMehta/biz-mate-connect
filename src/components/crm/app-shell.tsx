@@ -11,6 +11,7 @@ import {
   LogOut,
   MoreHorizontal,
   Plus,
+  Crosshair,
   Settings,
   Users,
 } from "lucide-react";
@@ -18,6 +19,7 @@ import { useState, type ReactNode } from "react";
 
 import { GlobalSearch } from "@/components/crm/global-search";
 import { NewEnquiryDialog } from "@/components/crm/new-enquiry-dialog";
+import { NewTargetDialog } from "@/components/crm/new-target-dialog";
 import { QuickAddTaskDialog } from "@/components/crm/tasks";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,6 +44,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { data } = useCurrentPartner();
   const [enquiryOpen, setEnquiryOpen] = useState(false);
   const [taskOpen, setTaskOpen] = useState(false);
+  const [targetOpen, setTargetOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
 
   const isAdmin = data?.isAdmin ?? false;
@@ -109,6 +112,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               <GlobalSearch />
             </div>
             <div className="hidden lg:block" />
+            <Button variant="outline" size="sm" onClick={() => setTargetOpen(true)} aria-label="New target">
+              <Crosshair aria-hidden="true" /> <span className="hidden sm:inline">New Target</span>
+            </Button>
             <Button variant="outline" size="sm" onClick={() => setTaskOpen(true)} aria-label="Quick add task">
               <CheckSquare aria-hidden="true" /> <span className="hidden sm:inline">Add task</span>
             </Button>
@@ -180,6 +186,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         currentPartnerId={data?.partner.id ?? null}
       />
       <QuickAddTaskDialog open={taskOpen} onOpenChange={setTaskOpen} />
+      <NewTargetDialog open={targetOpen} onOpenChange={setTargetOpen} currentPartnerId={data?.partner.id ?? null} />
     </div>
   );
 }

@@ -16,3 +16,10 @@
 - [x] Meeting & interaction logging (form, auto task/costs/activity, Meetings page, timelines)
 - [x] Tasks page and partner Dashboard
 - [x] Cross-sell rules, suggestions, dashboard ideas, reports metric
+
+## Outbound hunting & documents
+- [x] New 8-stage list + data migration
+- [x] Research fields, research task, Research→Outreach gate
+- [x] First-meeting outcome in interaction form
+- [x] Documents table, storage bucket, Documents tabs, paperclip counts
+- [x] Update all screens to new stages
