@@ -33,6 +33,12 @@ export const INTERACTION_TYPES: { value: InteractionType; label: string; icon: t
 ];
 
 const DURATIONS = [15, 30, 60, 90, 120];
+const OUTCOMES = [
+  { value: "proposal_now", label: "Lead - proposal now", dateLabel: "Send proposal by" },
+  { value: "meet_again", label: "Lead - meet again", dateLabel: "Next meeting date" },
+  { value: "later", label: "Lead - later", dateLabel: "Revisit on" },
+  { value: "not_lead", label: "Not a lead", dateLabel: "" },
+] as const;
 const NEXT_PICKS = [
   { label: "Tomorrow", days: 1 },
   { label: "3 days", days: 3 },
@@ -99,6 +105,9 @@ export function LogInteractionDialog({
   const [full, setFull] = useState(false);
   const [detail, setDetail] = useState({ agenda: "", requirements: "", commitments: "", objections: "", decisions: "" });
   const [suggestFor, setSuggestFor] = useState<string | null>(null);
+  const [outcome, setOutcome] = useState<"" | "proposal_now" | "meet_again" | "later" | "not_lead">("");
+  const [outcomeDate, setOutcomeDate] = useState("");
+  const [outcomeReason, setOutcomeReason] = useState("");
 
   useEffect(() => {
     if (!open) return;
@@ -114,6 +123,7 @@ export function LogInteractionDialog({
     setNextDate("");
     setFull(false);
     setDetail({ agenda: "", requirements: "", commitments: "", objections: "", decisions: "" });
+    setOutcome(""); setOutcomeDate(""); setOutcomeReason("");
   }, [open, organisationId, opportunityId, me]);
 
   // Opportunity fixed → resolve its organisation
@@ -121,7 +131,7 @@ export function LogInteractionDialog({
     queryKey: ["log-opp", opportunityId],
     enabled: open && !!opportunityId,
     queryFn: async () => {
-      const { data } = await supabase.from("opportunities").select("id, organisation_id, title").eq("id", opportunityId!).single();
+      const { data } = await supabase.from("opportunities").select("id, organisation_id, title, stage").eq("id", opportunityId!).single();
       return data;
     },
   });
@@ -140,7 +150,7 @@ export function LogInteractionDialog({
     queryKey: ["log-org-opps", effectiveOrg],
     enabled: open && !!effectiveOrg && !opportunityId,
     queryFn: async () => {
-      const { data, error } = await supabase.from("opportunities").select("id, title").eq("organisation_id", effectiveOrg).eq("status", "open").order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("opportunities").select("id, title, stage").eq("organisation_id", effectiveOrg).eq("status", "open").order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
@@ -174,6 +184,9 @@ export function LogInteractionDialog({
         ...(full && detail.commitments.trim() ? { _commitments: detail.commitments } : {}),
         ...(full && detail.objections.trim() ? { _objections: detail.objections } : {}),
         ...(full && detail.decisions.trim() ? { _decisions: detail.decisions } : {}),
+        ...(needsOutcome && outcome ? { _outcome: outcome } : {}),
+        ...(needsOutcome && outcomeDate && outcome !== "not_lead" ? { _outcome_date: outcomeDate } : {}),
+        ...(needsOutcome && outcome === "not_lead" ? { _outcome_reason: outcomeReason.trim() } : {}),
       });
       if (error) throw error;
       return { row: data?.[0], opp };
@@ -189,23 +202,26 @@ export function LogInteractionDialog({
 
   const moveStage = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.rpc("move_opportunity_stage", { _opportunity_id: id, _stage: "meeting_discovery", _probability: 40 });
+      const { error } = await supabase.rpc("move_opportunity_stage", { _opportunity_id: id, _stage: "first_meeting", _probability: 25 });
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Moved to Meeting/Discovery");
+      toast.success("Moved to First Meeting");
       setSuggestFor(null);
       void qc.invalidateQueries();
     },
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const canSave = !!effectiveOrg && nextStep.trim().length > 0 && !!nextDate && !!when;
+  const selectedStage = opportunityId ? fixedOpp?.stage : orgOpps.find((o) => o.id === oppId)?.stage;
+  const needsOutcome = type === "meeting" && selectedStage === "first_meeting";
+  const outcomeOk = !needsOutcome || (outcome !== "" && (outcome === "not_lead" ? outcomeReason.trim().length > 0 : !!outcomeDate));
+  const canSave = !!effectiveOrg && nextStep.trim().length > 0 && !!nextDate && !!when && outcomeOk;
 
   function submit(e: FormEvent) {
     e.preventDefault();
     if (!canSave) {
-      toast.error(effectiveOrg ? "Add a next step and its date" : "Choose an organisation");
+      toast.error(!effectiveOrg ? "Choose an organisation" : !outcomeOk ? "Complete the first meeting outcome" : "Add a next step and its date");
       return;
     }
     save.mutate();
@@ -329,6 +345,29 @@ export function LogInteractionDialog({
               </div>
             )}
 
+            {needsOutcome && (
+              <div className="space-y-3 border border-accent bg-accent/5 p-3">
+                <Label>First meeting outcome (required)</Label>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {OUTCOMES.map((o) => (
+                    <Chip key={o.value} active={outcome === o.value} onClick={() => setOutcome(o.value)}>{o.label}</Chip>
+                  ))}
+                </div>
+                {outcome && outcome !== "not_lead" && (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="li-odate">{OUTCOMES.find((o) => o.value === outcome)?.dateLabel}</Label>
+                    <Input id="li-odate" type="date" value={outcomeDate} onChange={(e) => setOutcomeDate(e.target.value)} />
+                  </div>
+                )}
+                {outcome === "not_lead" && (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="li-oreason">Reason</Label>
+                    <Input id="li-oreason" value={outcomeReason} onChange={(e) => setOutcomeReason(e.target.value)} placeholder="One-line reason" />
+                  </div>
+                )}
+              </div>
+            )}
+
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button type="submit" disabled={!canSave || save.isPending}>{save.isPending ? "Saving…" : "Save interaction"}</Button>
@@ -340,8 +379,8 @@ export function LogInteractionDialog({
       <Dialog open={!!suggestFor} onOpenChange={(o) => !o && setSuggestFor(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Move to Meeting/Discovery?</DialogTitle>
-            <DialogDescription>You logged a meeting. Move this opportunity to Meeting/Discovery at 40% probability?</DialogDescription>
+            <DialogTitle>Move to First Meeting?</DialogTitle>
+            <DialogDescription>You logged a meeting. Move this opportunity to First Meeting at 25% probability?</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setSuggestFor(null)}>Not now</Button>
