@@ -53,7 +53,7 @@ function TasksPage() {
       <PageHeader
         title="Tasks"
         description="Follow-ups owned across the team."
-        action={<Button onClick={() => setAddOpen(true)}><Plus /> Add task</Button>}
+        actions={<Button onClick={() => setAddOpen(true)}><Plus /> Add task</Button>}
       />
       <div className="flex items-center gap-2">
         <Switch id="all-partners" checked={allPartners} onCheckedChange={setAllPartners} />
