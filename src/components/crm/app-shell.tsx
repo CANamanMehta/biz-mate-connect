@@ -18,6 +18,7 @@ import { useState, type ReactNode } from "react";
 
 import { GlobalSearch } from "@/components/crm/global-search";
 import { NewEnquiryDialog } from "@/components/crm/new-enquiry-dialog";
+import { QuickAddTaskDialog } from "@/components/crm/tasks";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentPartner } from "@/lib/crm";
@@ -40,6 +41,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const { data } = useCurrentPartner();
   const [enquiryOpen, setEnquiryOpen] = useState(false);
+  const [taskOpen, setTaskOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
 
   const isAdmin = data?.isAdmin ?? false;
@@ -99,13 +101,17 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <div className="lg:pl-60">
         <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
-          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 px-4 py-3 lg:grid-cols-1 lg:px-8">
+          <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 lg:grid-cols-[minmax(0,36rem)_1fr_auto] lg:px-8">
             <div className="flex size-9 shrink-0 items-center justify-center bg-primary font-display text-xs font-semibold text-primary-foreground lg:hidden">
               AOM
             </div>
-            <div className="min-w-0 lg:max-w-xl">
+            <div className="min-w-0">
               <GlobalSearch />
             </div>
+            <div className="hidden lg:block" />
+            <Button variant="outline" size="sm" onClick={() => setTaskOpen(true)} aria-label="Quick add task">
+              <CheckSquare aria-hidden="true" /> <span className="hidden sm:inline">Add task</span>
+            </Button>
           </div>
         </header>
 
@@ -173,6 +179,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         onOpenChange={setEnquiryOpen}
         currentPartnerId={data?.partner.id ?? null}
       />
+      <QuickAddTaskDialog open={taskOpen} onOpenChange={setTaskOpen} />
     </div>
   );
 }

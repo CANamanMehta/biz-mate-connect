@@ -45,6 +45,7 @@ import {
   titleise,
   useBranches,
   useCurrentPartner,
+  useOpenTaskOpportunityIds,
   usePartners,
   useServiceLines,
   type OpportunityStage,
@@ -373,6 +374,8 @@ function CardMenu({ opp, onStage, onAction }: { opp: Opp } & Omit<CardProps, "th
 
 function OppCard({ opp, thresholds, onStage, onAction }: { opp: Opp } & CardProps) {
   const stale = staleLevel(opp, thresholds);
+  const { data: withTask } = useOpenTaskOpportunityIds();
+  const noNext = opp.stage !== "converted" && withTask !== undefined && !withTask.has(opp.id);
   return (
     <div
       draggable
@@ -382,6 +385,9 @@ function OppCard({ opp, thresholds, onStage, onAction }: { opp: Opp } & CardProp
         stale === "red" ? "border-destructive" : stale === "amber" ? "border-warning" : "border-transparent",
       )}
     >
+      {noNext && (
+        <p className="-mx-3 -mt-3 rounded-t bg-destructive/10 px-3 py-1 text-[11px] font-semibold text-destructive">No next action</p>
+      )}
       <div className="flex items-start justify-between gap-2">
         <p className="flex items-center gap-1 font-medium leading-tight text-primary">
           {opp.is_restricted && <Lock className="size-3.5 shrink-0 text-accent" aria-label="Restricted" />}
