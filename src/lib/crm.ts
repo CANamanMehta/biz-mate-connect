@@ -107,3 +107,51 @@ export function useBranches() {
     staleTime: 60_000,
   });
 }
+
+export type StaleThresholds = { default_days: number; late_stage_days: number; warning_days: number };
+export const DEFAULT_STALE_THRESHOLDS: StaleThresholds = { default_days: 14, late_stage_days: 10, warning_days: 3 };
+const DAY_MS = 86_400_000;
+export const daysSince = (d: string | null | undefined) =>
+  d ? Math.floor((Date.now() - new Date(d).getTime()) / DAY_MS) : 0;
+
+export function useStaleThresholds() {
+  return useQuery({
+    queryKey: ["app-settings", "pipeline_stale_thresholds"],
+    queryFn: async () => {
+      const { data } = await supabase.from("app_settings").select("value").eq("key", "pipeline_stale_thresholds").maybeSingle();
+      return { ...DEFAULT_STALE_THRESHOLDS, ...((data?.value as Partial<StaleThresholds>) ?? {}) };
+    },
+  });
+}
+
+export function staleLevelFor(
+  o: { stage: OpportunityStage; last_activity_date: string | null; stage_changed_at: string },
+  t: StaleThresholds,
+): "red" | "amber" | null {
+  if (o.stage === "converted") return null;
+  const limit = o.stage === "proposal" || o.stage === "negotiation" ? t.late_stage_days : t.default_days;
+  const days = daysSince(o.last_activity_date ?? o.stage_changed_at);
+  if (days > limit) return "red";
+  if (days > limit - t.warning_days) return "amber";
+  return null;
+}
+
+/** Local YYYY-MM-DD, offset by days. */
+export function isoDay(offset = 0, from?: string) {
+  const d = from ? new Date(`${from}T00:00:00`) : new Date();
+  d.setDate(d.getDate() + offset);
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
+/** Set of opportunity ids that have at least one open task. */
+export function useOpenTaskOpportunityIds() {
+  return useQuery({
+    queryKey: ["tasks", "open-opp-ids"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("tasks").select("opportunity_id").eq("status", "open").not("opportunity_id", "is", null);
+      if (error) throw error;
+      return new Set((data ?? []).map((r) => r.opportunity_id as string));
+    },
+  });
+}

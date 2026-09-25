@@ -1166,6 +1166,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_task: {
+        Args: {
+          _due_date: string
+          _opportunity_id?: string
+          _owner_partner_id?: string
+          _title: string
+        }
+        Returns: string
+      }
       apply_sharing_template: {
         Args: { _opportunity_id: string; _rows: Json; _template_name: string }
         Returns: undefined
@@ -1177,6 +1186,14 @@ export type Database = {
       can_edit_opportunity: {
         Args: { _opportunity_id: string }
         Returns: boolean
+      }
+      complete_task: {
+        Args: { _next_due?: string; _next_title?: string; _task_id: string }
+        Returns: {
+          next_task_id: string
+          opportunity_id: string
+          recurring_task_id: string
+        }[]
       }
       create_enquiry: {
         Args: {
@@ -1302,6 +1319,14 @@ export type Database = {
       }
       update_enquiry_stage: {
         Args: { _action: string; _opportunity_id: string; _reason?: string }
+        Returns: undefined
+      }
+      update_task: {
+        Args: {
+          _due_date?: string
+          _owner_partner_id?: string
+          _task_id: string
+        }
         Returns: undefined
       }
     }

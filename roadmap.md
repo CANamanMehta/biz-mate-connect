@@ -14,3 +14,4 @@
 - [ ] Conversion flow (placeholder dialog for now)
 
 - [x] Meeting & interaction logging (form, auto task/costs/activity, Meetings page, timelines)
+- [x] Tasks page and partner Dashboard
