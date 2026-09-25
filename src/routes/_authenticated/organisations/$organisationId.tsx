@@ -101,19 +101,6 @@ function OrganisationDetailPage() {
     },
   });
 
-  const { data: meetings = [] } = useQuery({
-    queryKey: ["organisation-meetings", organisationId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("meetings")
-        .select("id, type, meeting_date, next_step, next_step_date")
-        .eq("organisation_id", organisationId)
-        .order("meeting_date", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-  });
-
   const { data: tasks = [] } = useQuery({
     queryKey: ["organisation-tasks", organisationId],
     queryFn: async () => {
