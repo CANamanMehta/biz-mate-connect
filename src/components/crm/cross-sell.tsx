@@ -68,7 +68,7 @@ export function CrossSellIdeas({ firm }: { firm: boolean }) {
   const [reason, setReason] = useState("");
 
   const { data = [] } = useQuery({
-    queryKey: ["cross-sell-ideas", me?.id, firm],
+    queryKey: ["cross-sell-ideas", me?.partner.id, firm],
     enabled: !!me,
     queryFn: async () => {
       const { data, error } = await supabase
@@ -79,9 +79,9 @@ export function CrossSellIdeas({ firm }: { firm: boolean }) {
         .limit(200);
       if (error) throw error;
       if (firm) return data;
-      const { data: opps } = await supabase.from("opportunities").select("organisation_id").eq("owner_partner_id", me!.id);
+      const { data: opps } = await supabase.from("opportunities").select("organisation_id").eq("owner_partner_id", me!.partner.id);
       const mine = new Set((opps ?? []).map((o) => o.organisation_id));
-      return data.filter((s) => s.organisations?.relationship_owner_partner_id === me!.id || mine.has(s.organisation_id));
+      return data.filter((s) => s.organisations?.relationship_owner_partner_id === me!.partner.id || mine.has(s.organisation_id));
     },
   });
 
