@@ -242,7 +242,7 @@ export function NewEnquiryDialog({
                 >
                   <p className="text-sm text-foreground">
                     Possible match: {row.organisation_name} — owner {row.owner_name}, stage{" "}
-                    {titleise(row.stage) ?? "—"}
+                    {row.stage ? stageLabel(row.stage) : "—"}
                   </p>
                   {row.has_other_owner_open_pursuit && (
                     <p className="text-sm font-medium text-destructive">

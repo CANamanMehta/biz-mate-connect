@@ -10,6 +10,8 @@ import { EmptyState, LoadingRows, PageHeader } from "@/components/crm/page-heade
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DocumentsPanel } from "@/components/crm/documents";
+import { stageLabel } from "@/lib/crm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { CONTACT_ROLES, formatCurrency, formatDate, titleise, useServiceLines } from "@/lib/crm";
@@ -193,6 +195,7 @@ function OrganisationDetailPage() {
           <TabsTrigger value="opportunities">Opportunities</TabsTrigger>
           <TabsTrigger value="meetings">Meetings</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
+          <TabsTrigger value="documents">Documents</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
 
@@ -384,7 +387,7 @@ function OrganisationDetailPage() {
             <div key={opportunity.id} className="border border-border bg-background p-4">
               <Link to="/opportunities/$opportunityId" params={{ opportunityId: opportunity.id }} className="font-medium text-foreground hover:underline">{opportunity.title}</Link>
               <p className="mt-1 text-sm text-muted-foreground">
-                {titleise(opportunity.stage)} · {titleise(opportunity.status)} ·{" "}
+                {stageLabel(opportunity.stage)} · {titleise(opportunity.status)} ·{" "}
                 {opportunity.probability}% · {formatCurrency(opportunity.estimated_gross_fee)} ·{" "}
                 {opportunity.partners?.name ?? "—"}
               </p>
@@ -407,6 +410,10 @@ function OrganisationDetailPage() {
               </p>
             </div>
           ))}
+        </TabsContent>
+
+        <TabsContent value="documents" className="pt-5">
+          <DocumentsPanel organisationId={organisationId} />
         </TabsContent>
 
         <TabsContent value="history" className="space-y-3 pt-5">

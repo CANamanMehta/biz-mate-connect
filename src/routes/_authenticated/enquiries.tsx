@@ -36,7 +36,7 @@ function EnquiriesPage() {
         .select(
           "id, title, urgency, status, estimated_gross_fee, created_at, last_activity_date, organisations(id, name, city), partners!opportunities_owner_partner_id_fkey(name)",
         )
-        .eq("stage", "enquiry")
+        .eq("stage", "outreach")
         .eq("status", "open")
         .order("created_at", { ascending: false });
       if (error) throw error;

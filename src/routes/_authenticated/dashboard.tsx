@@ -20,7 +20,8 @@ import {
   formatDate,
   isoDay,
   staleLevelFor,
-  titleise,
+  stageLabel,
+  weightedValue,
   useCurrentPartner,
   useOpenTaskOpportunityIds,
   useStaleThresholds,
@@ -83,14 +84,14 @@ function DashboardPage() {
     const live = scope.filter((o) => o.stage !== "converted");
     const stale = thresholds ? live.filter((o) => staleLevelFor(o, thresholds) === "red") : [];
     const gross = live.reduce((s, o) => s + Number(o.estimated_gross_fee), 0);
-    const weighted = live.reduce((s, o) => s + (Number(o.estimated_gross_fee) * o.probability) / 100, 0);
+    const weighted = live.reduce((s, o) => s + weightedValue(o), 0);
     const byPartner = new Map<string, { name: string; count: number; gross: number; weighted: number }>();
     for (const o of opps.filter((x) => x.stage !== "converted")) {
       const key = o.owner_partner_id;
       const row = byPartner.get(key) ?? { name: o.partners?.name ?? "—", count: 0, gross: 0, weighted: 0 };
       row.count += 1;
       row.gross += Number(o.estimated_gross_fee);
-      row.weighted += (Number(o.estimated_gross_fee) * o.probability) / 100;
+      row.weighted += weightedValue(o);
       byPartner.set(key, row);
     }
     return {
@@ -101,7 +102,7 @@ function DashboardPage() {
       overdue: scopeTasks.filter((t) => t.due_date < today).length,
       hot: live.filter((o) => o.stage === "proposal" || o.stage === "negotiation").sort((a, b) => Number(b.estimated_gross_fee) - Number(a.estimated_gross_fee)),
       newEnquiries: scope
-        .filter((o) => o.stage === "enquiry" && daysSince(o.created_at) <= 7)
+        .filter((o) => o.stage === "outreach" && daysSince(o.created_at) <= 7)
         .sort((a, b) => b.created_at.localeCompare(a.created_at)),
       noNext: withTask ? live.filter((o) => !withTask.has(o.id)) : [],
       meetings: firm ? meetings : meetings.filter((m) => m.created_by === myId || m.meeting_partners.some((p) => p.partner_id === myId)),
@@ -176,7 +177,7 @@ function DashboardPage() {
 
         <Section title="Stale opportunities" count={v.stale.length} to="/pipeline">
           {v.stale.slice(0, 5).map((o) => (
-            <OppLine key={o.id} o={o} meta={`${daysSince(o.last_activity_date ?? o.stage_changed_at)}d no activity · ${titleise(o.stage)}`} danger>
+            <OppLine key={o.id} o={o} meta={`${daysSince(o.last_activity_date ?? o.stage_changed_at)}d no activity · ${stageLabel(o.stage)}`} danger>
               <Button size="sm" variant="outline" className="h-7 px-2" onClick={() => setLogFor(o)}>Log update</Button>
               <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => setParkFor(o)}>Park</Button>
             </OppLine>
@@ -185,7 +186,7 @@ function DashboardPage() {
 
         <Section title="Hot opportunities" count={v.hot.length} to="/pipeline">
           {v.hot.slice(0, 5).map((o) => (
-            <OppLine key={o.id} o={o} meta={`${titleise(o.stage)} · ${o.probability}%`}>
+            <OppLine key={o.id} o={o} meta={`${stageLabel(o.stage)} · ${o.probability}%`}>
               <span className="text-sm font-semibold">{formatCurrency(Number(o.estimated_gross_fee))}</span>
             </OppLine>
           ))}
@@ -199,7 +200,7 @@ function DashboardPage() {
 
         <Section title="No next action" count={v.noNext.length} to="/pipeline">
           {v.noNext.slice(0, 5).map((o) => (
-            <OppLine key={o.id} o={o} meta={`${titleise(o.stage)} · no open task`}>
+            <OppLine key={o.id} o={o} meta={`${stageLabel(o.stage)} · no open task`}>
               <Button size="sm" variant="outline" className="h-7 px-2" onClick={() => setLogFor(o)}>Log update</Button>
             </OppLine>
           ))}
