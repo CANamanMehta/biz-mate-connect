@@ -12,3 +12,5 @@
 
 - [x] Pipeline page (board, list, parked & lost, stale limits)
 - [ ] Conversion flow (placeholder dialog for now)
+
+- [x] Meeting & interaction logging (form, auto task/costs/activity, Meetings page, timelines)
