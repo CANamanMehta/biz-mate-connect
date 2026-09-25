@@ -79,8 +79,8 @@ export function LogInteractionDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  organisationId?: string;
-  opportunityId?: string;
+  organisationId?: string | undefined;
+  opportunityId?: string | undefined;
 }) {
   const qc = useQueryClient();
   const { data: me } = useCurrentPartner();
@@ -353,7 +353,7 @@ export function LogInteractionDialog({
   );
 }
 
-export function LogInteractionButton(props: { organisationId?: string; opportunityId?: string; size?: "sm" | "default" }) {
+export function LogInteractionButton(props: { organisationId?: string | undefined; opportunityId?: string | undefined; size?: "sm" | "default" }) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -449,7 +449,7 @@ export function InteractionCard({ m, showContext }: { m: MeetingRow; showContext
   );
 }
 
-export function InteractionTimeline({ organisationId, opportunityId }: { organisationId?: string; opportunityId?: string }) {
+export function InteractionTimeline({ organisationId, opportunityId }: { organisationId?: string | undefined; opportunityId?: string }) {
   const { data = [], isLoading } = useQuery({
     queryKey: ["interactions", organisationId ?? null, opportunityId ?? null],
     queryFn: async () => {
