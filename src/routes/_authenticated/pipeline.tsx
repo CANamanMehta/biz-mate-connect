@@ -213,6 +213,7 @@ function PipelinePage() {
 
   return (
     <div className="space-y-5">
+      {logDialog}
       <PageHeader
         title="Pipeline"
         description="Stage-by-stage view of every live opportunity."
