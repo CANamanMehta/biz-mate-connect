@@ -58,7 +58,7 @@ export function NewTargetDialog({ open, onOpenChange, currentPartnerId }: { open
 
   function submit(e: FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !owner || !due) return toast.error("Add the organisation, owner and research due date");
+    if (!name.trim() || !owner || !due) { toast.error("Add the organisation, owner and research due date"); return; }
     save.mutate();
   }
 

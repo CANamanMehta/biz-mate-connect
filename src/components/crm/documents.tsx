@@ -49,7 +49,7 @@ export function DocumentsPanel({ organisationId, opportunityId }: { organisation
       if (file.size > MAX) throw new Error("File is larger than 20 MB");
       if (!me) throw new Error("Not signed in");
       const path = `${organisationId}/${crypto.randomUUID()}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("crm-documents").upload(path, file, { contentType: file.type || undefined });
+      const { error: upErr } = await supabase.storage.from("crm-documents").upload(path, file, file.type ? { contentType: file.type } : {});
       if (upErr) throw upErr;
       const { error } = await supabase.from("documents").insert({
         organisation_id: organisationId,
@@ -87,7 +87,7 @@ export function DocumentsPanel({ organisationId, opportunityId }: { organisation
 
   async function download(path: string, name: string) {
     const { data, error } = await supabase.storage.from("crm-documents").createSignedUrl(path, 60, { download: name });
-    if (error || !data) return toast.error(error?.message ?? "Could not download");
+    if (error || !data) { toast.error(error?.message ?? "Could not download"); return; }
     window.open(data.signedUrl, "_blank");
   }
 
