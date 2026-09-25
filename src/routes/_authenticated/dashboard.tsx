@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Lightbulb, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
+import { CrossSellIdeas } from "@/components/crm/cross-sell";
 import { useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -204,10 +205,7 @@ function DashboardPage() {
           ))}
         </Section>
 
-        <section className="border border-dashed bg-muted/20 p-4 lg:col-span-2">
-          <p className="flex items-center gap-2 font-display text-sm font-semibold text-primary"><Lightbulb className="size-4 text-accent" /> Cross-sell ideas</p>
-          <p className="mt-1 text-sm text-muted-foreground">Coming soon — suggestions for services existing clients don't use yet.</p>
-        </section>
+        <CrossSellIdeas firm={firm} />
       </div>
 
       {dialog}

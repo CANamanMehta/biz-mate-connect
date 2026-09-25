@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { EmptyState, LoadingRows, PageHeader } from "@/components/crm/page-header";
 import { SharingTemplatesAdmin } from "@/components/crm/sharing-templates-admin";
+import { CrossSellRulesAdmin } from "@/components/crm/cross-sell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -214,6 +215,7 @@ function AdminPage() {
           <TabsTrigger value="services">Service lines</TabsTrigger>
           <TabsTrigger value="branches">Branches</TabsTrigger>
           <TabsTrigger value="templates">Sharing templates</TabsTrigger>
+          <TabsTrigger value="cross-sell">Cross-sell rules</TabsTrigger>
         </TabsList>
 
         <TabsContent value="partners" className="space-y-3 pt-5">
@@ -465,6 +467,10 @@ function AdminPage() {
 
         <TabsContent value="templates" className="space-y-3 pt-5">
           <SharingTemplatesAdmin />
+        </TabsContent>
+
+        <TabsContent value="cross-sell" className="space-y-3 pt-5">
+          <CrossSellRulesAdmin />
         </TabsContent>
       </Tabs>
     </div>

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { CrossSellReport } from "@/components/crm/cross-sell";
 import { EmptyState, PageHeader } from "@/components/crm/page-header";
 
 export const Route = createFileRoute("/_authenticated/reports")({
@@ -16,8 +17,9 @@ export const Route = createFileRoute("/_authenticated/reports")({
   component: () => (
     <div className="space-y-6">
       <PageHeader title="Reports" description="Conversion, revenue and activity insight." />
+      <CrossSellReport />
       <EmptyState
-        title="Reporting coming next"
+        title="More reports coming next"
         description="Reports will build on the pipeline and revenue data."
       />
     </div>
