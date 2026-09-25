@@ -4,6 +4,7 @@ import { AlertTriangle, Lock, Plus, Trash2, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { InteractionTimeline, LogInteractionButton } from "@/components/crm/interactions";
 import { EmptyState, LoadingRows } from "@/components/crm/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -173,6 +174,7 @@ function OpportunityPage() {
             </div>
           </Field>
         </div>
+        <div className="flex justify-end"><LogInteractionButton opportunityId={opp.id} /></div>
         <Collaborators opp={opp} partners={partners} meId={me?.partner.id} onChange={refresh} ownerName={owner?.name} />
       </header>
 
@@ -183,7 +185,7 @@ function OpportunityPage() {
           ))}
         </TabsList>
         <TabsContent value="overview" className="pt-5"><Overview opp={opp} partners={partners} saveField={saveField} onChange={refresh} /></TabsContent>
-        <TabsContent value="meetings" className="pt-5"><Meetings id={opp.id} /></TabsContent>
+        <TabsContent value="meetings" className="pt-5"><InteractionTimeline opportunityId={opp.id} /></TabsContent>
         <TabsContent value="tasks" className="pt-5"><Tasks id={opp.id} partners={partners} /></TabsContent>
         <TabsContent value="revenue" className="pt-5"><RevenueSplit opp={opp} partners={partners} meId={me?.partner.id} onChange={refresh} /></TabsContent>
         <TabsContent value="costs" className="pt-5"><EmptyState title="Costs coming soon" description="Lead costs for this opportunity will appear here." /></TabsContent>
@@ -611,30 +613,6 @@ function AllocationRow({ r, partners, branches, amount, onUpdate, onDelete }: {
       <td className="p-2"><InlineText value={r.note} onSave={(v) => onUpdate({ note: v })} placeholder="Note" /></td>
       <td className="p-2"><Button size="icon" variant="ghost" aria-label="Delete row" onClick={onDelete}><Trash2 className="size-4" /></Button></td>
     </tr>
-  );
-}
-
-function Meetings({ id }: { id: string }) {
-  const { data = [], isLoading } = useQuery({
-    queryKey: ["opp-meetings", id],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("meetings").select("id, type, meeting_date, summary, next_step, next_step_date").eq("opportunity_id", id).order("meeting_date", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-  });
-  if (isLoading) return <LoadingRows rows={2} />;
-  if (data.length === 0) return <EmptyState title="No meetings yet" />;
-  return (
-    <div className="space-y-2">
-      {data.map((m) => (
-        <div key={m.id} className="border border-border p-3 text-sm">
-          <p className="font-medium">{titleise(m.type)} · {formatDate(m.meeting_date)}</p>
-          {m.summary && <p className="mt-1 text-muted-foreground">{m.summary}</p>}
-          <p className="mt-1 text-xs">Next: {m.next_step} · {formatDate(m.next_step_date)}</p>
-        </div>
-      ))}
-    </div>
   );
 }
 

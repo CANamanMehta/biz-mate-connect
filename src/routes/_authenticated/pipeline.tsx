@@ -1,3 +1,4 @@
+import { LogInteractionDialog } from "@/components/crm/interactions";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowUpDown, KanbanSquare, List, Lock, MoreHorizontal, Settings2 } from "lucide-react";
@@ -206,10 +207,13 @@ function PipelinePage() {
     setPending({ kind: "move", opp, stage, probability: STAGES.find((s) => s.value === stage)!.probability });
   }
 
-  const cardProps = { thresholds, onStage: requestStage, onAction: (kind: "hold" | "lost" | "disqualify", opp: Opp) => setPending({ kind, opp }) };
+  const [logOpp, setLogOpp] = useState<Opp | null>(null);
+  const cardProps = { thresholds, onStage: requestStage, onAction: (kind: "hold" | "lost" | "disqualify" | "log", opp: Opp) => (kind === "log" ? setLogOpp(opp) : setPending({ kind, opp })) };
+  const logDialog = <LogInteractionDialog open={!!logOpp} onOpenChange={(o) => !o && setLogOpp(null)} opportunityId={logOpp?.id} />;
 
   return (
     <div className="space-y-5">
+      {logDialog}
       <PageHeader
         title="Pipeline"
         description="Stage-by-stage view of every live opportunity."
@@ -342,7 +346,7 @@ function OrgLink({ opp }: { opp: Opp }) {
 type CardProps = {
   thresholds: Thresholds;
   onStage: (opp: Opp, stage: OpportunityStage) => void;
-  onAction: (kind: "hold" | "lost" | "disqualify", opp: Opp) => void;
+  onAction: (kind: "hold" | "lost" | "disqualify" | "log", opp: Opp) => void;
 };
 
 function CardMenu({ opp, onStage, onAction }: { opp: Opp } & Omit<CardProps, "thresholds">) {
@@ -352,6 +356,8 @@ function CardMenu({ opp, onStage, onAction }: { opp: Opp } & Omit<CardProps, "th
         <Button variant="ghost" size="icon" className="size-7" aria-label="Opportunity actions"><MoreHorizontal /></Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => onAction("log", opp)}>Log interaction</DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuLabel className="text-xs text-muted-foreground">Move to</DropdownMenuLabel>
         {STAGES.filter((s) => s.value !== opp.stage).map((s) => (
           <DropdownMenuItem key={s.value} onClick={() => onStage(opp, s.value)}>{s.label}</DropdownMenuItem>

@@ -1231,6 +1231,29 @@ export type Database = {
           partner_role: Database["public"]["Enums"]["app_role"]
         }[]
       }
+      log_interaction: {
+        Args: {
+          _agenda?: string
+          _commitments?: string
+          _contact_ids?: string[]
+          _decisions?: string
+          _duration_minutes?: number
+          _meeting_date: string
+          _next_step: string
+          _next_step_date: string
+          _objections?: string
+          _opportunity_id?: string
+          _organisation_id: string
+          _partner_ids?: string[]
+          _requirements?: string
+          _summary?: string
+          _type: Database["public"]["Enums"]["interaction_type"]
+        }
+        Returns: {
+          meeting_id: string
+          suggest_discovery: boolean
+        }[]
+      }
       move_opportunity_stage: {
         Args: {
           _opportunity_id: string
