@@ -1433,6 +1433,19 @@ export type Database = {
           organisation_id: string
         }[]
       }
+      create_target: {
+        Args: {
+          _city?: string
+          _industry?: string
+          _organisation_id?: string
+          _organisation_name: string
+          _owner_partner_id: string
+          _research_due_date?: string
+          _service_line_ids?: string[]
+          _target_rationale?: string
+        }
+        Returns: string
+      }
       cross_sell_report: {
         Args: never
         Returns: {
@@ -1493,6 +1506,9 @@ export type Database = {
           _objections?: string
           _opportunity_id?: string
           _organisation_id: string
+          _outcome?: string
+          _outcome_date?: string
+          _outcome_reason?: string
           _partner_ids?: string[]
           _requirements?: string
           _summary?: string
