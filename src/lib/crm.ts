@@ -20,6 +20,7 @@ export const ACQUISITION_SOURCES: { value: AcquisitionSource; label: string }[] 
   { value: "walk_in", label: "Walk-in" },
   { value: "cold_outreach", label: "Cold outreach" },
   { value: "social", label: "Social" },
+  { value: "outbound_research", label: "Outbound - partner research" },
 ];
 
 export const CONTACT_ROLES = [
