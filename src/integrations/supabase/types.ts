@@ -183,6 +183,132 @@ export type Database = {
           },
         ]
       }
+      cross_sell_rules: {
+        Row: {
+          active: boolean
+          created_at: string
+          from_service_line_id: string
+          id: string
+          reason: string | null
+          to_service_line_id: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          from_service_line_id: string
+          id?: string
+          reason?: string | null
+          to_service_line_id: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          from_service_line_id?: string
+          id?: string
+          reason?: string | null
+          to_service_line_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cross_sell_rules_from_service_line_id_fkey"
+            columns: ["from_service_line_id"]
+            isOneToOne: false
+            referencedRelation: "service_lines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cross_sell_rules_to_service_line_id_fkey"
+            columns: ["to_service_line_id"]
+            isOneToOne: false
+            referencedRelation: "service_lines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cross_sell_suggestions: {
+        Row: {
+          created_at: string
+          dismissed_at: string | null
+          dismissed_by: string | null
+          dismissed_reason: string | null
+          id: string
+          opportunity_id: string | null
+          organisation_id: string
+          pursued_by: string | null
+          reason: string | null
+          service_line_id: string
+          status: Database["public"]["Enums"]["cross_sell_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          dismissed_at?: string | null
+          dismissed_by?: string | null
+          dismissed_reason?: string | null
+          id?: string
+          opportunity_id?: string | null
+          organisation_id: string
+          pursued_by?: string | null
+          reason?: string | null
+          service_line_id: string
+          status?: Database["public"]["Enums"]["cross_sell_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          dismissed_at?: string | null
+          dismissed_by?: string | null
+          dismissed_reason?: string | null
+          id?: string
+          opportunity_id?: string | null
+          organisation_id?: string
+          pursued_by?: string | null
+          reason?: string | null
+          service_line_id?: string
+          status?: Database["public"]["Enums"]["cross_sell_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cross_sell_suggestions_dismissed_by_fkey"
+            columns: ["dismissed_by"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cross_sell_suggestions_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cross_sell_suggestions_organisation_id_fkey"
+            columns: ["organisation_id"]
+            isOneToOne: false
+            referencedRelation: "organisations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cross_sell_suggestions_pursued_by_fkey"
+            columns: ["pursued_by"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cross_sell_suggestions_service_line_id_fkey"
+            columns: ["service_line_id"]
+            isOneToOne: false
+            referencedRelation: "service_lines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_costs: {
         Row: {
           amount_inr: number | null
@@ -1195,6 +1321,14 @@ export type Database = {
           recurring_task_id: string
         }[]
       }
+      create_cross_sell_opportunity: {
+        Args: {
+          _organisation_id: string
+          _service_line_id: string
+          _suggestion_id?: string
+        }
+        Returns: string
+      }
       create_enquiry: {
         Args: {
           _acquired_by_partner_id?: string
@@ -1220,7 +1354,21 @@ export type Database = {
           organisation_id: string
         }[]
       }
+      cross_sell_report: {
+        Args: never
+        Returns: {
+          converted: number
+          created: number
+          partner_id: string
+          partner_name: string
+          pursued: number
+        }[]
+      }
       current_partner_id: { Args: never; Returns: string }
+      dismiss_cross_sell: {
+        Args: { _reason: string; _suggestion_id: string }
+        Returns: undefined
+      }
       find_enquiry_duplicates: {
         Args: { _email?: string; _name: string; _phone?: string }
         Returns: {
@@ -1230,6 +1378,11 @@ export type Database = {
           owner_name: string
           stage: Database["public"]["Enums"]["opportunity_stage"]
         }[]
+      }
+      generate_cross_sell_all: { Args: never; Returns: number }
+      generate_cross_sell_for_org: {
+        Args: { _organisation_id: string }
+        Returns: number
       }
       has_role: {
         Args: {
@@ -1270,6 +1423,10 @@ export type Database = {
           meeting_id: string
           suggest_discovery: boolean
         }[]
+      }
+      mark_service_not_relevant: {
+        Args: { _organisation_id: string; _service_line_id: string }
+        Returns: undefined
       }
       move_opportunity_stage: {
         Args: {
@@ -1360,6 +1517,7 @@ export type Database = {
         | "influencer"
         | "gatekeeper"
         | "other"
+      cross_sell_status: "suggested" | "pursued" | "dismissed"
       enquiry_urgency: "low" | "medium" | "high"
       execution_mode:
         | "solo"
@@ -1559,6 +1717,7 @@ export const Constants = {
         "gatekeeper",
         "other",
       ],
+      cross_sell_status: ["suggested", "pursued", "dismissed"],
       enquiry_urgency: ["low", "medium", "high"],
       execution_mode: [
         "solo",
