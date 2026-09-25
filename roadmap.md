@@ -18,8 +18,8 @@
 - [x] Cross-sell rules, suggestions, dashboard ideas, reports metric
 
 ## Outbound hunting & documents
-- [ ] New 8-stage list + data migration
-- [ ] Research fields, research task, Research→Outreach gate
-- [ ] First-meeting outcome in interaction form
-- [ ] Documents table, storage bucket, Documents tabs, paperclip counts
-- [ ] Update all screens to new stages
+- [x] New 8-stage list + data migration
+- [x] Research fields, research task, Research→Outreach gate
+- [x] First-meeting outcome in interaction form
+- [x] Documents table, storage bucket, Documents tabs, paperclip counts
+- [x] Update all screens to new stages
