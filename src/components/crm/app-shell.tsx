@@ -106,16 +106,15 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <div className="lg:pl-60">
         <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
-          <div className="flex items-center gap-3 px-4 py-3 lg:px-8 [&>*:nth-child(2)]:min-w-0 [&>*:nth-child(2)]:flex-1 lg:[&>*:nth-child(2)]:max-w-xl [&>*:nth-child(3)]:lg:flex-1">
+          <div className="flex items-center gap-3 px-4 py-3 lg:px-8">
             <div className="flex size-9 shrink-0 items-center justify-center bg-primary font-display text-xs font-semibold text-primary-foreground lg:hidden">
               AOM
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1 lg:max-w-xl">
               <GlobalSearch />
             </div>
-            <div className="flex justify-end">
-              <InstallAppButton compact />
-            </div>
+            <div className="hidden flex-1 lg:block" />
+            <InstallAppButton compact />
             <Button variant="outline" size="sm" onClick={() => setTargetOpen(true)} aria-label="New target">
               <Crosshair aria-hidden="true" /> <span className="hidden sm:inline">New Target</span>
             </Button>
