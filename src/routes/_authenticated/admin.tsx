@@ -39,6 +39,7 @@ function AdminPage() {
   const { data: serviceLines = [] } = useServiceLines();
   const { data: branches = [] } = useBranches();
   const sendInvite = useServerFn(invitePartner);
+  const setPassword = useServerFn(setPartnerPassword);
 
   const [newServiceLine, setNewServiceLine] = useState("");
   const [newBranch, setNewBranch] = useState("");
@@ -47,9 +48,12 @@ function AdminPage() {
     email: "",
     branch: "Jaipur-HO",
     role: "partner" as "partner" | "admin",
+    password: "",
   });
   const [editingPartner, setEditingPartner] = useState<string | null>(null);
   const [editValues, setEditValues] = useState({ name: "", email: "" });
+  const [passwordFor, setPasswordFor] = useState<string | null>(null);
+  const [passwordValue, setPasswordValue] = useState("");
 
   const { data: roles = [] } = useQuery({
     queryKey: ["user-roles"],
