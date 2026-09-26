@@ -115,12 +115,25 @@ function AdminPage() {
     onError: (error: Error) => toast.error(error.message || "Could not send this invitation."),
   });
 
+  const assignPassword = useMutation({
+    mutationFn: async ({ partnerId, password }: { partnerId: string; password: string }) =>
+      setPassword({ data: { partnerId, password } }),
+    onSuccess: () => {
+      setPasswordFor(null);
+      setPasswordValue("");
+      toast.success("Password set — the partner can sign in straight away");
+      void queryClient.invalidateQueries({ queryKey: ["partners"] });
+    },
+    onError: (error: Error) => toast.error(error.message || "Could not set this password."),
+  });
+
   const addPartner = useMutation({
     mutationFn: async (values: {
       name: string;
       email: string;
       branch: string;
       role: "partner" | "admin";
+      password: string;
     }) => {
       const email = values.email.trim().toLowerCase();
       const { data: existing } = await supabase
