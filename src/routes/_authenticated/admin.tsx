@@ -286,13 +286,33 @@ function AdminPage() {
                 <option value="admin">Admin</option>
               </select>
             </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Input
+                value={newPartner.password}
+                onChange={(event) =>
+                  setNewPartner({ ...newPartner, password: event.target.value })
+                }
+                placeholder="Set a password now (optional)"
+                type="text"
+                aria-label="Initial password"
+              />
+              <p className="self-center text-xs text-muted-foreground">
+                Leave blank to email an invitation instead. With a password, the partner can sign
+                in immediately — share it privately and ask them to change it.
+              </p>
+            </div>
             <Button
               disabled={
-                !newPartner.name.trim() || !newPartner.email.trim() || addPartner.isPending
+                !newPartner.name.trim() ||
+                !newPartner.email.trim() ||
+                addPartner.isPending ||
+                (newPartner.password.trim().length > 0 && newPartner.password.trim().length < 8)
               }
               onClick={() => addPartner.mutate(newPartner)}
             >
-              Add partner &amp; send invitation
+              {newPartner.password.trim()
+                ? "Add partner with this password"
+                : "Add partner & send invitation"}
             </Button>
           </div>
 
