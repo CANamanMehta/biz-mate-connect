@@ -438,14 +438,69 @@ function AdminPage() {
                     </select>
                   </div>
                 </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  disabled={!partner.active || invite.isPending}
-                  onClick={() => invite.mutate(partner.email)}
-                >
-                  Send invitation
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={!partner.active || invite.isPending}
+                    onClick={() => invite.mutate(partner.email)}
+                  >
+                    Send invitation
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={!partner.active}
+                    onClick={() => {
+                      setPasswordFor(passwordFor === partner.id ? null : partner.id);
+                      setPasswordValue("");
+                    }}
+                  >
+                    {passwordFor === partner.id ? "Cancel" : "Set / reset password"}
+                  </Button>
+                </div>
+                {passwordFor === partner.id ? (
+                  <div className="space-y-2 border border-border bg-muted/40 p-3">
+                    <Label htmlFor={`password-${partner.id}`} className="text-xs">
+                      New password for {partner.email}
+                    </Label>
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                      <Input
+                        id={`password-${partner.id}`}
+                        value={passwordValue}
+                        onChange={(event) => setPasswordValue(event.target.value)}
+                        placeholder="At least 8 characters"
+                        type="text"
+                      />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          const generated = `Aom@${Math.random().toString(36).slice(2, 8)}${Math.floor(Math.random() * 90 + 10)}`;
+                          setPasswordValue(generated);
+                        }}
+                      >
+                        Generate
+                      </Button>
+                      <Button
+                        size="sm"
+                        disabled={passwordValue.trim().length < 8 || assignPassword.isPending}
+                        onClick={() =>
+                          assignPassword.mutate({
+                            partnerId: partner.id,
+                            password: passwordValue.trim(),
+                          })
+                        }
+                      >
+                        Save password
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Share this password privately. The partner signs in with their email and
+                      this password, and can change it later from the sign-in page.
+                    </p>
+                  </div>
+                ) : null}
               </div>
             );
           })}
