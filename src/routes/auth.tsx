@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 
+import { InstallAppButton } from "@/components/pwa";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -162,7 +163,10 @@ function AuthPage() {
             )}
           </form>
 
-          <p className="mt-9 border-t border-border pt-5 text-center text-xs leading-5 text-muted-foreground">
+          <div className="mt-6 flex justify-center">
+            <InstallAppButton />
+          </div>
+          <p className="mt-6 border-t border-border pt-5 text-center text-xs leading-5 text-muted-foreground">
             Access is invitation-only. Contact an AOM administrator if you need an account.
           </p>
         </div>

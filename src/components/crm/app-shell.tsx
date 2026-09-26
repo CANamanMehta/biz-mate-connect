@@ -21,6 +21,7 @@ import { GlobalSearch } from "@/components/crm/global-search";
 import { NewEnquiryDialog } from "@/components/crm/new-enquiry-dialog";
 import { NewTargetDialog } from "@/components/crm/new-target-dialog";
 import { QuickAddTaskDialog } from "@/components/crm/tasks";
+import { InstallAppButton } from "@/components/pwa";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentPartner } from "@/lib/crm";
@@ -91,6 +92,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             {data?.partner.name ?? "Partner"}
           </p>
           <p className="truncate px-3 text-xs text-muted-foreground">{data?.partner.branch}</p>
+          <InstallAppButton className="mt-2 w-full justify-start" />
           <Button
             variant="ghost"
             size="sm"
@@ -104,14 +106,16 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <div className="lg:pl-60">
         <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
-          <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 lg:grid-cols-[minmax(0,36rem)_1fr_auto] lg:px-8">
+          <div className="flex items-center gap-3 px-4 py-3 lg:px-8 [&>*:nth-child(2)]:min-w-0 [&>*:nth-child(2)]:flex-1 lg:[&>*:nth-child(2)]:max-w-xl [&>*:nth-child(3)]:lg:flex-1">
             <div className="flex size-9 shrink-0 items-center justify-center bg-primary font-display text-xs font-semibold text-primary-foreground lg:hidden">
               AOM
             </div>
             <div className="min-w-0">
               <GlobalSearch />
             </div>
-            <div className="hidden lg:block" />
+            <div className="flex justify-end">
+              <InstallAppButton compact />
+            </div>
             <Button variant="outline" size="sm" onClick={() => setTargetOpen(true)} aria-label="New target">
               <Crosshair aria-hidden="true" /> <span className="hidden sm:inline">New Target</span>
             </Button>
