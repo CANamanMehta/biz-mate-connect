@@ -161,11 +161,21 @@ function AdminPage() {
         .insert({ partner_id: created.id, user_id: created.user_id, role: values.role });
       if (roleError) throw roleError;
 
+      if (values.password.trim()) {
+        await setPassword({ data: { partnerId: created.id, password: values.password.trim() } });
+        return "password" as const;
+      }
+
       await sendInvite({ data: { email, redirectTo: `${window.location.origin}/reset-password` } });
+      return "invite" as const;
     },
-    onSuccess: () => {
-      setNewPartner({ name: "", email: "", branch: "Jaipur-HO", role: "partner" });
-      toast.success("Partner added and invitation sent");
+    onSuccess: (mode) => {
+      setNewPartner({ name: "", email: "", branch: "Jaipur-HO", role: "partner", password: "" });
+      toast.success(
+        mode === "password"
+          ? "Partner added with a password — they can sign in now"
+          : "Partner added and invitation sent",
+      );
       void queryClient.invalidateQueries({ queryKey: ["partners"] });
       void queryClient.invalidateQueries({ queryKey: ["user-roles"] });
     },
