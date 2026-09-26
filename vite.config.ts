@@ -21,6 +21,7 @@ export default defineConfig({
         manifest: false, // served from public/manifest.webmanifest
         devOptions: { enabled: false },
         filename: "sw.js",
+        outDir: "dist/client",
         includeAssets: ["offline.html", "favicon.png", "apple-touch-icon.png", "icon-*.png"],
         workbox: {
           globPatterns: ["**/*.{js,css,woff,woff2,png,svg,ico,webmanifest}", "offline.html"],
