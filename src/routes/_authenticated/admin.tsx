@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { invitePartner } from "@/lib/admin.functions";
+import { invitePartner, setPartnerPassword } from "@/lib/admin.functions";
 import { useBranches, useCurrentPartner, usePartners, useServiceLines } from "@/lib/crm";
 
 const BRANCH_OPTIONS = ["Jaipur-HO", "Indore", "Ahmedabad", "other"];
