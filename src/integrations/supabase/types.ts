@@ -22,7 +22,7 @@ export type Database = {
           detail: string | null
           id: string
           opportunity_id: string | null
-          organisation_id: string
+          organisation_id: string | null
           updated_at: string
         }
         Insert: {
@@ -32,7 +32,7 @@ export type Database = {
           detail?: string | null
           id?: string
           opportunity_id?: string | null
-          organisation_id: string
+          organisation_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -42,7 +42,7 @@ export type Database = {
           detail?: string | null
           id?: string
           opportunity_id?: string | null
-          organisation_id?: string
+          organisation_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -1493,6 +1493,7 @@ export type Database = {
           partner_role: Database["public"]["Enums"]["app_role"]
         }[]
       }
+      log_app_install: { Args: { _device: string }; Returns: undefined }
       log_interaction: {
         Args: {
           _agenda?: string

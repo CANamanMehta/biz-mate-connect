@@ -120,6 +120,13 @@
       "when": 1790340011572,
       "tag": "0016_outbound_stage_functions",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1790399816652,
+      "tag": "0017_app_install_logging",
+      "breakpoints": true
     }
   ]
 }
