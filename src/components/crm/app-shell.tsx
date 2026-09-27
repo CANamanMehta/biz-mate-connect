@@ -114,7 +114,6 @@ export function AppShell({ children }: { children: ReactNode }) {
               <GlobalSearch />
             </div>
             <div className="hidden flex-1 lg:block" />
-            <InstallAppButton compact />
             <Button variant="outline" size="sm" onClick={() => setTargetOpen(true)} aria-label="New target">
               <Crosshair aria-hidden="true" /> <span className="hidden sm:inline">New Target</span>
             </Button>

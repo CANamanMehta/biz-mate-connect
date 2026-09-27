@@ -16,6 +16,7 @@
 - [x] Meeting & interaction logging (form, auto task/costs/activity, Meetings page, timelines)
 - [x] Tasks page and partner Dashboard
 - [x] Cross-sell rules, suggestions, dashboard ideas, reports metric
+- [x] Dashboard cross-sell dismiss and snooze controls
 
 ## Outbound hunting & documents
 - [x] New 8-stage list + data migration
