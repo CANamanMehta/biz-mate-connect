@@ -34,30 +34,47 @@ function useCreateCrossSell() {
   });
 }
 
-export function NotOfferedChip({ organisationId, serviceLineId, name }: { organisationId: string; serviceLineId: string; name: string }) {
+type ServiceChipStatus = "engaged" | "pitched" | "not_relevant" | "not_offered";
+
+const CHIP_STYLE: Record<ServiceChipStatus, string> = {
+  engaged: "border-primary bg-primary text-primary-foreground",
+  pitched: "border-[var(--orange-deep)] bg-[var(--orange-deep)] text-primary-foreground",
+  not_relevant: "border-border bg-muted text-muted-foreground line-through opacity-80",
+  not_offered: "border-border bg-muted text-muted-foreground",
+};
+
+export function ServiceChip({ organisationId, serviceLineId, name, status }: { organisationId: string; serviceLineId: string; name: string; status: ServiceChipStatus }) {
   const qc = useQueryClient();
   const create = useCreateCrossSell();
-  const notRelevant = useMutation({
-    mutationFn: async () => {
-      const { error } = await supabase.rpc("mark_service_not_relevant", { _organisation_id: organisationId, _service_line_id: serviceLineId });
+  const setStatus = useMutation({
+    mutationFn: async (next: ServiceChipStatus) => {
+      const { error } = await supabase.rpc("set_organisation_service_status", { _organisation_id: organisationId, _service_line_id: serviceLineId, _status: next });
       if (error) throw error;
+      return next;
     },
-    onSuccess: () => { toast.success(`${name} marked not relevant`); void qc.invalidateQueries(); },
+    onSuccess: (next) => { toast.success(`${name}: ${next.replace("_", " ")}`); void qc.invalidateQueries(); },
     onError: (e: Error) => toast.error(e.message),
   });
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button type="button" className="border border-border bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground hover:border-accent">
+        <button type="button" disabled={setStatus.isPending} className={`border px-3 py-1.5 text-xs font-medium hover:border-accent ${CHIP_STYLE[status]}`}>
           {name}
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
+        <DropdownMenuItem disabled={status === "engaged"} onClick={() => setStatus.mutate("engaged")}>Mark engaged</DropdownMenuItem>
+        <DropdownMenuItem disabled={status === "pitched"} onClick={() => setStatus.mutate("pitched")}>Mark pitched</DropdownMenuItem>
+        <DropdownMenuItem disabled={status === "not_relevant"} onClick={() => setStatus.mutate("not_relevant")}>Mark not relevant</DropdownMenuItem>
+        <DropdownMenuItem disabled={status === "not_offered"} onClick={() => setStatus.mutate("not_offered")}>Reset to not offered</DropdownMenuItem>
         <DropdownMenuItem onClick={() => create.mutate({ organisationId, serviceLineId })}>Create opportunity</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => notRelevant.mutate()}>Mark not relevant</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
+}
+
+export function NotOfferedChip(props: { organisationId: string; serviceLineId: string; name: string }) {
+  return <ServiceChip {...props} status="not_offered" />;
 }
 
 export function CrossSellIdeas({ firm }: { firm: boolean }) {
