@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Lightbulb } from "lucide-react";
+import { Clock3, Lightbulb } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -83,31 +83,54 @@ export function CrossSellIdeas({ firm }: { firm: boolean }) {
   const qc = useQueryClient();
   const [dismissing, setDismissing] = useState<string | null>(null);
   const [reason, setReason] = useState("");
+  const today = new Date().toISOString().slice(0, 10);
 
   const { data = [] } = useQuery({
     queryKey: ["cross-sell-ideas", me?.partner.id, firm],
     enabled: !!me,
     queryFn: async () => {
+      if (!me) return [];
+      const partnerId = me.partner.id;
       const { data, error } = await supabase
         .from("cross_sell_suggestions")
         .select("id, organisation_id, service_line_id, reason, created_at, organisations(name, relationship_owner_partner_id), service_lines(name)")
         .eq("status", "suggested")
+        .or(`snoozed_until.is.null,snoozed_until.lte.${today}`)
         .order("created_at", { ascending: false })
         .limit(200);
       if (error) throw error;
       if (firm) return data;
-      const { data: opps } = await supabase.from("opportunities").select("organisation_id").eq("owner_partner_id", me!.partner.id);
+      const { data: opps } = await supabase.from("opportunities").select("organisation_id").eq("owner_partner_id", partnerId);
       const mine = new Set((opps ?? []).map((o) => o.organisation_id));
-      return data.filter((s) => s.organisations?.relationship_owner_partner_id === me!.partner.id || mine.has(s.organisation_id));
+      return data.filter((s) => s.organisations?.relationship_owner_partner_id === partnerId || mine.has(s.organisation_id));
     },
   });
 
   const dismiss = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.rpc("dismiss_cross_sell", { _suggestion_id: dismissing!, _reason: reason });
+      if (!dismissing) throw new Error("Choose a cross-sell idea to dismiss");
+      const { error } = await supabase.rpc("dismiss_cross_sell", { _suggestion_id: dismissing, _reason: reason });
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Suggestion dismissed"); setDismissing(null); setReason(""); void qc.invalidateQueries({ queryKey: ["cross-sell-ideas"] }); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const snooze = useMutation({
+    mutationFn: async ({ id, days }: { id: string; days: number }) => {
+      const until = new Date();
+      until.setDate(until.getDate() + days);
+      const { error } = await supabase.rpc("snooze_cross_sell", {
+        _suggestion_id: id,
+        _until: until.toISOString().slice(0, 10),
+      });
+      if (error) throw error;
+      return days;
+    },
+    onSuccess: (days) => {
+      toast.success(`Idea snoozed for ${days === 1 ? "1 day" : `${days} days`}`);
+      void qc.invalidateQueries({ queryKey: ["cross-sell-ideas"] });
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -131,11 +154,23 @@ export function CrossSellIdeas({ firm }: { firm: boolean }) {
                 </p>
                 <p className="truncate text-xs text-muted-foreground">{s.reason}</p>
               </div>
-              <div className="flex shrink-0 gap-2">
+              <div className="flex shrink-0 flex-wrap gap-2">
                 <Button size="sm" className="h-7 px-2" disabled={create.isPending}
                   onClick={() => create.mutate({ organisationId: s.organisation_id, serviceLineId: s.service_line_id, suggestionId: s.id }, { onSuccess: () => void qc.invalidateQueries({ queryKey: ["cross-sell-ideas"] }) })}>
                   Create opportunity
                 </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button size="sm" variant="outline" className="h-7 px-2" disabled={snooze.isPending}>
+                      <Clock3 aria-hidden="true" /> Snooze
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => snooze.mutate({ id: s.id, days: 1 })}>Until tomorrow</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => snooze.mutate({ id: s.id, days: 7 })}>For 1 week</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => snooze.mutate({ id: s.id, days: 30 })}>For 1 month</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <Button size="sm" variant="outline" className="h-7 px-2" onClick={() => setDismissing(s.id)}>Dismiss</Button>
               </div>
             </li>
