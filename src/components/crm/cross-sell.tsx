@@ -89,6 +89,8 @@ export function CrossSellIdeas({ firm }: { firm: boolean }) {
     queryKey: ["cross-sell-ideas", me?.partner.id, firm],
     enabled: !!me,
     queryFn: async () => {
+      if (!me) return [];
+      const partnerId = me.partner.id;
       const { data, error } = await supabase
         .from("cross_sell_suggestions")
         .select("id, organisation_id, service_line_id, reason, created_at, organisations(name, relationship_owner_partner_id), service_lines(name)")
@@ -98,9 +100,9 @@ export function CrossSellIdeas({ firm }: { firm: boolean }) {
         .limit(200);
       if (error) throw error;
       if (firm) return data;
-      const { data: opps } = await supabase.from("opportunities").select("organisation_id").eq("owner_partner_id", me.partner.id);
+      const { data: opps } = await supabase.from("opportunities").select("organisation_id").eq("owner_partner_id", partnerId);
       const mine = new Set((opps ?? []).map((o) => o.organisation_id));
-      return data.filter((s) => s.organisations?.relationship_owner_partner_id === me.partner.id || mine.has(s.organisation_id));
+      return data.filter((s) => s.organisations?.relationship_owner_partner_id === partnerId || mine.has(s.organisation_id));
     },
   });
 
@@ -152,7 +154,7 @@ export function CrossSellIdeas({ firm }: { firm: boolean }) {
                 </p>
                 <p className="truncate text-xs text-muted-foreground">{s.reason}</p>
               </div>
-              <div className="flex shrink-0 gap-2">
+              <div className="flex shrink-0 flex-wrap gap-2">
                 <Button size="sm" className="h-7 px-2" disabled={create.isPending}
                   onClick={() => create.mutate({ organisationId: s.organisation_id, serviceLineId: s.service_line_id, suggestionId: s.id }, { onSuccess: () => void qc.invalidateQueries({ queryKey: ["cross-sell-ideas"] }) })}>
                   Create opportunity
