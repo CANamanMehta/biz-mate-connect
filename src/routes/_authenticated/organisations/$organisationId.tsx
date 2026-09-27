@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import { ContactBadges } from "@/routes/_authenticated/contacts";
 import { InteractionTimeline, LogInteractionButton } from "@/components/crm/interactions";
-import { NotOfferedChip } from "@/components/crm/cross-sell";
+import { ServiceChip } from "@/components/crm/cross-sell";
 import { EmptyState, LoadingRows, PageHeader } from "@/components/crm/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
