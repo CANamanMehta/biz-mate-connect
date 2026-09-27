@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import { ContactBadges } from "@/routes/_authenticated/contacts";
 import { InteractionTimeline, LogInteractionButton } from "@/components/crm/interactions";
-import { NotOfferedChip } from "@/components/crm/cross-sell";
+import { ServiceChip } from "@/components/crm/cross-sell";
 import { EmptyState, LoadingRows, PageHeader } from "@/components/crm/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -207,23 +207,16 @@ function OrganisationDetailPage() {
               {serviceLines
                 .filter((line) => line.active)
                 .map((line) => {
-                  const status = serviceStatus.get(line.id);
-                  if (!status || status === "past")
-                    return <NotOfferedChip key={line.id} organisationId={organisationId} serviceLineId={line.id} name={line.name} />;
+                  const raw = serviceStatus.get(line.id);
+                  const status = !raw || raw === "past" ? "not_offered" : raw;
                   return (
-                    <span
+                    <ServiceChip
                       key={line.id}
-                      className={cn(
-                        "border px-3 py-1.5 text-xs font-medium",
-                        status === "engaged" && "border-primary bg-primary text-primary-foreground",
-                        status === "pitched" && "border-accent text-accent",
-                        status !== "engaged" &&
-                          status !== "pitched" &&
-                          "border-border bg-muted text-muted-foreground",
-                      )}
-                    >
-                      {line.name}
-                    </span>
+                      organisationId={organisationId}
+                      serviceLineId={line.id}
+                      name={line.name}
+                      status={status}
+                    />
                   );
                 })}
             </div>

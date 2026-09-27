@@ -73,6 +73,8 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.289454 0.062217 263.947);
   --primary: oklch(0.289454 0.062217 263.947);
+  --orange-deep: #BA5E22;
+  --navy: #14284B;
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.968 0.007 247.896);
   --secondary-foreground: oklch(0.289454 0.062217 263.947);
