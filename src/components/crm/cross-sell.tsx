@@ -37,7 +37,7 @@ function useCreateCrossSell() {
 type ServiceChipStatus = "engaged" | "pitched" | "not_relevant" | "not_offered";
 
 const CHIP_STYLE: Record<ServiceChipStatus, string> = {
-  engaged: "border-primary bg-primary text-primary-foreground",
+  engaged: "border-[var(--navy)] bg-[var(--navy)] text-primary-foreground",
   pitched: "border-[var(--orange-deep)] bg-[var(--orange-deep)] text-primary-foreground",
   not_relevant: "border-border bg-muted text-muted-foreground line-through opacity-80",
   not_offered: "border-border bg-muted text-muted-foreground",
