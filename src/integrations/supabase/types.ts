@@ -1561,6 +1561,14 @@ export type Database = {
         }
         Returns: undefined
       }
+      set_organisation_service_status: {
+        Args: {
+          _organisation_id: string
+          _service_line_id: string
+          _status: string
+        }
+        Returns: undefined
+      }
       set_relationship_owner_from_opportunity: {
         Args: {
           _branch?: string

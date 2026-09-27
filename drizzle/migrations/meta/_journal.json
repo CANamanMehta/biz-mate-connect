@@ -127,6 +127,13 @@
       "when": 1790399816652,
       "tag": "0017_app_install_logging",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1790491269423,
+      "tag": "0018_set_organisation_service_status",
+      "breakpoints": true
     }
   ]
 }
