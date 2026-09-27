@@ -240,6 +240,7 @@ export type Database = {
           pursued_by: string | null
           reason: string | null
           service_line_id: string
+          snoozed_until: string | null
           status: Database["public"]["Enums"]["cross_sell_status"]
           updated_at: string
         }
@@ -254,6 +255,7 @@ export type Database = {
           pursued_by?: string | null
           reason?: string | null
           service_line_id: string
+          snoozed_until?: string | null
           status?: Database["public"]["Enums"]["cross_sell_status"]
           updated_at?: string
         }
@@ -268,6 +270,7 @@ export type Database = {
           pursued_by?: string | null
           reason?: string | null
           service_line_id?: string
+          snoozed_until?: string | null
           status?: Database["public"]["Enums"]["cross_sell_status"]
           updated_at?: string
         }
@@ -1576,6 +1579,10 @@ export type Database = {
           _partner_id?: string
           _type: Database["public"]["Enums"]["relationship_owner_type"]
         }
+        Returns: undefined
+      }
+      snooze_cross_sell: {
+        Args: { _suggestion_id: string; _until: string }
         Returns: undefined
       }
       update_enquiry_stage: {
