@@ -104,7 +104,13 @@ function OpportunityPage() {
   const save = useMutation({
     mutationFn: async ({ patch, label }: { patch: OppUpdate; label: string }) => {
       if (!opp) return;
-      const { error } = await supabase.from("opportunities").update(patch).eq("id", opp.id);
+      const { probability, ...rest } = patch;
+      if (probability !== undefined && probability !== null) {
+        const { error } = await supabase.rpc("set_opportunity_probability", { _opportunity_id: opp.id, _probability: probability });
+        if (error) throw error;
+        if (Object.keys(rest).length === 0) return;
+      }
+      const { error } = await supabase.from("opportunities").update(rest).eq("id", opp.id);
       if (error) throw error;
       if (me) {
         await supabase.from("activity_log").insert({
