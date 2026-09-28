@@ -1243,6 +1243,7 @@ export type Database = {
           completed_at: string | null
           created_at: string
           created_by: string | null
+          description: string | null
           due_date: string
           escalated: boolean
           id: string
@@ -1262,6 +1263,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           created_by?: string | null
+          description?: string | null
           due_date: string
           escalated?: boolean
           id?: string
@@ -1281,6 +1283,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           created_by?: string | null
+          description?: string | null
           due_date?: string
           escalated?: boolean
           id?: string
@@ -1504,6 +1507,9 @@ export type Database = {
           _contact_ids?: string[]
           _decisions?: string
           _duration_minutes?: number
+          _estimated_expenses?: number
+          _estimated_gross_fee?: number
+          _first_meeting?: boolean
           _meeting_date: string
           _next_step: string
           _next_step_date: string
@@ -1553,6 +1559,10 @@ export type Database = {
           subtitle: string
           title: string
         }[]
+      }
+      set_opportunity_probability: {
+        Args: { _opportunity_id: string; _probability: number }
+        Returns: undefined
       }
       set_opportunity_status: {
         Args: {

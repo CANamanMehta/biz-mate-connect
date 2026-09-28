@@ -647,3 +647,7 @@ function ThresholdDialog({ open, onOpenChange, value }: { open: boolean; onOpenC
     </Dialog>
   );
 }
+
+function toStrings(t: Thresholds): Record<keyof Thresholds, string> {
+  return Object.fromEntries(Object.entries(t).map(([k, v]) => [k, String(v)])) as Record<keyof Thresholds, string>;
+}
