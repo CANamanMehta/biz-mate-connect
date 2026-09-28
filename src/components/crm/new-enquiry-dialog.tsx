@@ -231,7 +231,7 @@ export function NewEnquiryDialog({
           </div>
 
           {showDuplicates && (
-            <div className="space-y-3 border-l-2 border-accent bg-accent/5 p-3">
+            <div className="space-y-3 border-l-2 border-highlight bg-highlight/5 p-3">
               <p className="flex items-center gap-2 text-sm font-medium text-foreground">
                 <TriangleAlert className="size-4 text-accent" aria-hidden="true" /> Possible matches
                 found
@@ -356,7 +356,7 @@ export function NewEnquiryDialog({
                         "border px-3 py-1.5 text-xs font-medium transition-colors",
                         selected
                           ? "border-primary bg-primary text-primary-foreground"
-                          : "border-border bg-background text-muted-foreground hover:border-accent hover:text-foreground",
+                          : "border-border bg-background text-muted-foreground hover:border-highlight hover:text-foreground",
                       )}
                     >
                       {line.name}

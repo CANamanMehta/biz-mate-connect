@@ -108,6 +108,9 @@ export function LogInteractionDialog({
   const [outcome, setOutcome] = useState<"" | "proposal_now" | "meet_again" | "later" | "not_lead">("");
   const [outcomeDate, setOutcomeDate] = useState("");
   const [outcomeReason, setOutcomeReason] = useState("");
+  const [firstMeeting, setFirstMeeting] = useState(false);
+  const [fee, setFee] = useState("");
+  const [expenses, setExpenses] = useState("");
 
   useEffect(() => {
     if (!open) return;
@@ -123,7 +126,7 @@ export function LogInteractionDialog({
     setNextDate("");
     setFull(false);
     setDetail({ agenda: "", requirements: "", commitments: "", objections: "", decisions: "" });
-    setOutcome(""); setOutcomeDate(""); setOutcomeReason("");
+    setOutcome(""); setOutcomeDate(""); setOutcomeReason(""); setFirstMeeting(false); setFee(""); setExpenses("");
   }, [open, organisationId, opportunityId, me]);
 
   // Opportunity fixed → resolve its organisation
@@ -131,7 +134,7 @@ export function LogInteractionDialog({
     queryKey: ["log-opp", opportunityId],
     enabled: open && !!opportunityId,
     queryFn: async () => {
-      const { data } = await supabase.from("opportunities").select("id, organisation_id, title, stage").eq("id", opportunityId!).single();
+      const { data } = await supabase.from("opportunities").select("id, organisation_id, title, stage, research_status, estimated_gross_fee").eq("id", opportunityId!).single();
       return data;
     },
   });
@@ -150,7 +153,7 @@ export function LogInteractionDialog({
     queryKey: ["log-org-opps", effectiveOrg],
     enabled: open && !!effectiveOrg && !opportunityId,
     queryFn: async () => {
-      const { data, error } = await supabase.from("opportunities").select("id, title, stage").eq("organisation_id", effectiveOrg).eq("status", "open").order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("opportunities").select("id, title, stage, research_status, estimated_gross_fee").eq("organisation_id", effectiveOrg).eq("status", "open").order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
@@ -187,6 +190,9 @@ export function LogInteractionDialog({
         ...(needsOutcome && outcome ? { _outcome: outcome } : {}),
         ...(needsOutcome && outcomeDate && outcome !== "not_lead" ? { _outcome_date: outcomeDate } : {}),
         ...(needsOutcome && outcome === "not_lead" ? { _outcome_reason: outcomeReason.trim() } : {}),
+        ...(canPromote && firstMeeting ? { _first_meeting: true } : {}),
+        ...(needsOutcome && outcome === "proposal_now" && fee !== "" ? { _estimated_gross_fee: Number(fee) } : {}),
+        ...(needsOutcome && outcome === "proposal_now" && expenses !== "" ? { _estimated_expenses: Number(expenses) } : {}),
       });
       if (error) throw error;
       return { row: data?.[0], opp };
@@ -213,15 +219,20 @@ export function LogInteractionDialog({
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const selectedStage = opportunityId ? fixedOpp?.stage : orgOpps.find((o) => o.id === oppId)?.stage;
-  const needsOutcome = type === "meeting" && selectedStage === "first_meeting";
-  const outcomeOk = !needsOutcome || (outcome !== "" && (outcome === "not_lead" ? outcomeReason.trim().length > 0 : !!outcomeDate));
+  const selectedOpp = opportunityId ? fixedOpp : orgOpps.find((o) => o.id === oppId);
+  const selectedStage = selectedOpp?.stage;
+  const canPromote = type === "meeting" && !!selectedStage && ["target", "research", "outreach"].includes(selectedStage);
+  const researchBlocked = canPromote && firstMeeting && selectedStage !== "outreach" && selectedOpp?.research_status !== "done";
+  const needsOutcome = type === "meeting" && (selectedStage === "first_meeting" || (canPromote && firstMeeting));
+  const needsFee = needsOutcome && outcome === "proposal_now" && Number(selectedOpp?.estimated_gross_fee ?? 0) <= 0;
+  const feeOk = !needsFee || Number(fee) > 0;
+  const outcomeOk = !researchBlocked && feeOk && (!needsOutcome || (outcome !== "" && (outcome === "not_lead" ? outcomeReason.trim().length > 0 : !!outcomeDate)));
   const canSave = !!effectiveOrg && nextStep.trim().length > 0 && !!nextDate && !!when && outcomeOk;
 
   function submit(e: FormEvent) {
     e.preventDefault();
     if (!canSave) {
-      toast.error(!effectiveOrg ? "Choose an organisation" : !outcomeOk ? "Complete the first meeting outcome" : "Add a next step and its date");
+      toast.error(!effectiveOrg ? "Choose an organisation" : researchBlocked ? "Mark research as Done first" : !feeOk ? "Enter the estimated gross fee" : !outcomeOk ? "Complete the first meeting outcome" : "Add a next step and its date");
       return;
     }
     save.mutate();
@@ -345,8 +356,18 @@ export function LogInteractionDialog({
               </div>
             )}
 
+            {canPromote && (
+              <label className="flex items-start gap-2 border border-border p-3 text-sm">
+                <input type="checkbox" className="mt-0.5 size-4 accent-[var(--primary)]" checked={firstMeeting} onChange={(e) => setFirstMeeting(e.target.checked)} />
+                <span>
+                  <span className="font-medium">This was the first meeting with the client</span>
+                  <span className="block text-xs text-muted-foreground">Moves the deal to First Meeting and records the outcome.</span>
+                  {researchBlocked && <span className="mt-1 block text-xs text-destructive">Research must be marked Done on this opportunity first.</span>}
+                </span>
+              </label>
+            )}
             {needsOutcome && (
-              <div className="space-y-3 border border-accent bg-accent/5 p-3">
+              <div className="space-y-3 border border-highlight bg-highlight/5 p-3">
                 <Label>First meeting outcome (required)</Label>
                 <div className="grid grid-cols-2 gap-1.5">
                   {OUTCOMES.map((o) => (
@@ -359,6 +380,19 @@ export function LogInteractionDialog({
                     <Input id="li-odate" type="date" value={outcomeDate} onChange={(e) => setOutcomeDate(e.target.value)} />
                   </div>
                 )}
+                {needsFee && (
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="li-fee">Estimated gross fee (₹) *</Label>
+                      <Input id="li-fee" type="number" min={1} inputMode="numeric" value={fee} onChange={(e) => setFee(e.target.value)} />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="li-exp">Estimated expenses (₹)</Label>
+                      <Input id="li-exp" type="number" min={0} inputMode="numeric" value={expenses} onChange={(e) => setExpenses(e.target.value)} />
+                    </div>
+                  </div>
+                )}
+                {outcome === "proposal_now" && <p className="text-xs text-muted-foreground">One "Send proposal" task will be created; your next step is saved as its note.</p>}
                 {outcome === "not_lead" && (
                   <div className="space-y-1.5">
                     <Label htmlFor="li-oreason">Reason</Label>
@@ -508,7 +542,7 @@ export function InteractionTimeline({ organisationId, opportunityId }: { organis
       <ol className="space-y-3 border-l-2 border-border pl-4">
         {data.map((m) => (
           <li key={m.id} className="relative">
-            <span className="absolute -left-[23px] top-5 size-3 rounded-full bg-accent" aria-hidden />
+            <span className="absolute -left-[23px] top-5 size-3 rounded-full bg-highlight" aria-hidden />
             <InteractionCard m={m} showContext={!opportunityId} />
           </li>
         ))}

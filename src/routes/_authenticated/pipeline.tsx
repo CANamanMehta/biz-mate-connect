@@ -403,7 +403,7 @@ function OppCard({ opp, thresholds, onStage, onAction }: { opp: Opp } & CardProp
       </div>
       <div className="flex items-center justify-between gap-2 border-t pt-2 text-xs">
         <span className="truncate text-muted-foreground">
-          {opp.next_action ? `${opp.next_action} · ${formatDate(opp.next_action_date)}` : "No next action"}
+          {opp.next_action ? `${opp.next_action} · ${formatDate(opp.next_action_date)}` : ""}
         </span>
         <span title={opp.partners?.name ?? ""} className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
           {initials(opp.partners?.name)}
@@ -432,7 +432,7 @@ function Board({ opps, ...props }: { opps: Opp[] } & CardProps) {
             onDragOver={(e) => { e.preventDefault(); setOver(s.value); }}
             onDragLeave={() => setOver(null)}
             onDrop={(e) => drop(e, s.value)}
-            className={cn("flex w-[85vw] shrink-0 snap-center flex-col rounded-md bg-muted/50 sm:w-72", over === s.value && "ring-2 ring-accent")}
+            className={cn("flex w-[85vw] shrink-0 snap-center flex-col rounded-md bg-muted/50 sm:w-72", over === s.value && "ring-2 ring-highlight")}
           >
             <header className="border-b px-3 py-2">
               <div className="flex items-center justify-between">
@@ -607,11 +607,15 @@ function ActionDialog({ pending, onClose, busy, onMove, onStatus }: {
 
 function ThresholdDialog({ open, onOpenChange, value }: { open: boolean; onOpenChange: (o: boolean) => void; value: Thresholds }) {
   const qc = useQueryClient();
-  const [form, setForm] = useState(value);
-  useEffect(() => setForm(value), [value, open]);
+  const [form, setForm] = useState<Record<keyof Thresholds, string>>(() => toStrings(value));
+  useEffect(() => setForm(toStrings(value)), [value, open]);
+  const isValid = (s: string) => /^\d+$/.test(s.trim()) && Number(s) >= 1 && Number(s) <= 90;
+  const allValid = (Object.values(form) as string[]).every(isValid);
   const save = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("app_settings").upsert({ key: "pipeline_stale_thresholds", value: form }, { onConflict: "key" });
+      if (!allValid) throw new Error("Use whole numbers from 1 to 90");
+      const value = Object.fromEntries(Object.entries(form).map(([k, v]) => [k, Number(v)]));
+      const { error } = await supabase.from("app_settings").upsert({ key: "pipeline_stale_thresholds", value }, { onConflict: "key" });
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Stale limits saved"); onOpenChange(false); void qc.invalidateQueries({ queryKey: ["app-settings"] }); },
@@ -631,14 +635,19 @@ function ThresholdDialog({ open, onOpenChange, value }: { open: boolean; onOpenC
           {fields.map(([k, label]) => (
             <div key={k} className="space-y-1">
               <Label htmlFor={k}>{label}</Label>
-              <Input id={k} type="number" min={1} value={form[k]} onChange={(e) => setForm((f) => ({ ...f, [k]: Number(e.target.value) }))} />
+              <Input id={k} type="number" min={1} max={90} step={1} inputMode="numeric" aria-invalid={!isValid(form[k])} value={form[k]} onChange={(e) => setForm((f) => ({ ...f, [k]: e.target.value }))} />
+              {!isValid(form[k]) && <p className="text-xs text-destructive">Enter a whole number from 1 to 90.</p>}
             </div>
           ))}
         </div>
         <DialogFooter>
-          <Button onClick={() => save.mutate()} disabled={save.isPending}>Save</Button>
+          <Button onClick={() => save.mutate()} disabled={save.isPending || !allValid}>Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
+}
+
+function toStrings(t: Thresholds): Record<keyof Thresholds, string> {
+  return Object.fromEntries(Object.entries(t).map(([k, v]) => [k, String(v)])) as Record<keyof Thresholds, string>;
 }

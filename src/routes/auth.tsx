@@ -89,7 +89,7 @@ function AuthPage() {
         </div>
 
         <div className="relative max-w-xl pb-10">
-          <div className="mb-7 h-1 w-14 bg-accent" />
+          <div className="mb-7 h-1 w-14 bg-highlight" />
           <h1 className="font-display text-5xl font-semibold leading-tight">Relationships built with clarity.</h1>
           <p className="mt-6 max-w-lg text-base leading-7 text-primary-foreground/70">
             A secure workspace for opportunities, client relationships, meetings, and shared growth across AOM.
@@ -149,9 +149,9 @@ function AuthPage() {
             )}
 
             {error && <p role="alert" className="border-l-2 border-destructive bg-destructive/5 px-3 py-2 text-sm text-destructive">{error}</p>}
-            {message && <p role="status" className="border-l-2 border-accent bg-accent/5 px-3 py-2 text-sm text-foreground">{message}</p>}
+            {message && <p role="status" className="border-l-2 border-highlight bg-highlight/5 px-3 py-2 text-sm text-foreground">{message}</p>}
 
-            <Button type="submit" className="h-11 w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isSubmitting}>
+            <Button type="submit" className="h-11 w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isSubmitting}>
               {isSubmitting ? "Please wait…" : isResetMode ? "Send reset link" : "Sign in"}
               {!isSubmitting && <ArrowRight aria-hidden="true" />}
             </Button>

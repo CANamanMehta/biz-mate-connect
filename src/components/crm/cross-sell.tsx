@@ -58,7 +58,7 @@ export function ServiceChip({ organisationId, serviceLineId, name, status }: { o
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button type="button" disabled={setStatus.isPending} className={`border px-3 py-1.5 text-xs font-medium hover:border-accent ${CHIP_STYLE[status]}`}>
+        <button type="button" disabled={setStatus.isPending} className={`border px-3 py-1.5 text-xs font-medium hover:border-highlight ${CHIP_STYLE[status]}`}>
           {name}
         </button>
       </DropdownMenuTrigger>

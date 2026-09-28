@@ -141,6 +141,13 @@
       "when": 1790515092356,
       "tag": "0019_cross_sell_suggestion_snoozing",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1790612417020,
+      "tag": "0020_opportunity_rule_guard",
+      "breakpoints": true
     }
   ]
 }

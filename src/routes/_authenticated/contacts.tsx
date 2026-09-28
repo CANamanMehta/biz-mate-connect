@@ -39,7 +39,7 @@ export function ContactBadges({
         </span>
       )}
       {isReferrer && (
-        <span className="border border-accent px-2 py-0.5 text-[11px] font-medium text-accent">
+        <span className="border border-highlight px-2 py-0.5 text-[11px] font-medium text-accent">
           Referrer
         </span>
       )}

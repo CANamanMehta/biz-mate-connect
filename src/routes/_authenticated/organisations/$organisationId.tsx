@@ -411,7 +411,7 @@ function OrganisationDetailPage() {
         <TabsContent value="history" className="space-y-3 pt-5">
           {history.length === 0 && <EmptyState title="No history yet" />}
           {history.map((entry) => (
-            <div key={entry.id} className="border-l-2 border-accent bg-background px-4 py-3">
+            <div key={entry.id} className="border-l-2 border-highlight bg-background px-4 py-3">
               <p className="text-sm font-medium text-foreground">{titleise(entry.action)}</p>
               {entry.detail && <p className="text-sm text-muted-foreground">{entry.detail}</p>}
               <p className="mt-1 text-xs text-muted-foreground">
