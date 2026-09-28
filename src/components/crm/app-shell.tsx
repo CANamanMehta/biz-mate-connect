@@ -80,7 +80,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               key={item.to}
               to={item.to}
               className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-              activeProps={{ className: "bg-primary/5 text-primary border-l-2 border-accent" }}
+              activeProps={{ className: "bg-primary/5 text-primary border-l-2 border-highlight" }}
             >
               <item.icon className="size-4 shrink-0" aria-hidden="true" />
               {item.label}

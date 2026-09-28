@@ -367,7 +367,7 @@ export function LogInteractionDialog({
               </label>
             )}
             {needsOutcome && (
-              <div className="space-y-3 border border-accent bg-accent/5 p-3">
+              <div className="space-y-3 border border-highlight bg-highlight/5 p-3">
                 <Label>First meeting outcome (required)</Label>
                 <div className="grid grid-cols-2 gap-1.5">
                   {OUTCOMES.map((o) => (
@@ -542,7 +542,7 @@ export function InteractionTimeline({ organisationId, opportunityId }: { organis
       <ol className="space-y-3 border-l-2 border-border pl-4">
         {data.map((m) => (
           <li key={m.id} className="relative">
-            <span className="absolute -left-[23px] top-5 size-3 rounded-full bg-accent" aria-hidden />
+            <span className="absolute -left-[23px] top-5 size-3 rounded-full bg-highlight" aria-hidden />
             <InteractionCard m={m} showContext={!opportunityId} />
           </li>
         ))}

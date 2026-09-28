@@ -669,7 +669,7 @@ function History({ id, partners }: { id: string; partners: Partner[] }) {
   return (
     <ol className="space-y-2">
       {data.map((a) => (
-        <li key={a.id} className="border-l-2 border-accent pl-3 text-sm">
+        <li key={a.id} className="border-l-2 border-highlight pl-3 text-sm">
           <p className="font-medium">{a.detail ?? titleise(a.action)}</p>
           <p className="text-xs text-muted-foreground">{partners.find((p) => p.id === a.actor_partner_id)?.name ?? "System"} · {new Date(a.created_at).toLocaleString("en-IN")}</p>
         </li>

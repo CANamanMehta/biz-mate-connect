@@ -432,7 +432,7 @@ function Board({ opps, ...props }: { opps: Opp[] } & CardProps) {
             onDragOver={(e) => { e.preventDefault(); setOver(s.value); }}
             onDragLeave={() => setOver(null)}
             onDrop={(e) => drop(e, s.value)}
-            className={cn("flex w-[85vw] shrink-0 snap-center flex-col rounded-md bg-muted/50 sm:w-72", over === s.value && "ring-2 ring-accent")}
+            className={cn("flex w-[85vw] shrink-0 snap-center flex-col rounded-md bg-muted/50 sm:w-72", over === s.value && "ring-2 ring-highlight")}
           >
             <header className="border-b px-3 py-2">
               <div className="flex items-center justify-between">
