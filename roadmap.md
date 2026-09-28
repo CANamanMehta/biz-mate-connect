@@ -24,3 +24,12 @@
 - [x] First-meeting outcome in interaction form
 - [x] Documents table, storage bucket, Documents tabs, paperclip counts
 - [x] Update all screens to new stages
+
+## Fix pack (Sep 28)
+- [x] Stale limits reset + 1–90 whole-number validation
+- [x] Database guard on stage/status/probability (approved actions only)
+- [x] First-meeting toggle at Target/Research/Outreach + outcome in one save
+- [x] Proposal now: fee in form, single "Send proposal" task
+- [x] Brand colour tokens, navy login/reset buttons
+- [x] Single "No next action" on pipeline cards
+- [ ] Signed-in end-to-end test of the fix pack (blocked: no signed-in session available here)
