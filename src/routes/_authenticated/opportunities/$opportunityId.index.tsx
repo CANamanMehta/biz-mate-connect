@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AlertTriangle, Lock, Plus, Trash2, X } from "lucide-react";
+import { FileCheck2, Lock, Trophy, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -8,28 +8,12 @@ import { InteractionTimeline, LogInteractionButton } from "@/components/crm/inte
 import { EmptyState, LoadingRows } from "@/components/crm/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { ConversionWizard, UndoConversionButton, useStartConversion } from "@/components/crm/conversion";
+import { InlineNumber, InlineText, RevenueSplit } from "@/components/crm/revenue-split";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import {
@@ -65,11 +49,8 @@ export const Route = createFileRoute("/_authenticated/opportunities/$opportunity
 
 type Enums = Database["public"]["Enums"];
 type OppUpdate = Database["public"]["Tables"]["opportunities"]["Update"];
-type Allocation = Database["public"]["Tables"]["revenue_allocations"]["Row"];
 
 const EXEC_MODES: Enums["execution_mode"][] = ["solo", "collaboration", "ho_executed", "branch_executed", "split_ho_branch"];
-const BENEFICIARY: Enums["beneficiary_type"][] = ["firm_mp", "partner", "branch", "ho"];
-const COMPONENTS: Enums["allocation_component"][] = ["firm_base", "referral_acquisition", "execution", "branch_profit_share", "custom"];
 const selectCls = "h-9 w-full border border-input bg-background px-2 text-sm";
 
 const SELECT =
@@ -93,7 +74,8 @@ function OpportunityPage() {
   const { data: opp, isLoading } = useOpportunity(opportunityId);
   const { data: me } = useCurrentPartner();
   const { data: partners = [] } = usePartners();
-  const [convertOpen, setConvertOpen] = useState(false);
+  const [convertId, setConvertId] = useState<string | null>(null);
+  const startConversion = useStartConversion(setConvertId);
 
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ["opportunity", opportunityId] });
@@ -154,7 +136,7 @@ function OpportunityPage() {
           <Field label="Stage">
             <select className={selectCls} value={opp.stage} onChange={(e) => {
               const s = e.target.value as OpportunityStage;
-              if (s === "converted") setConvertOpen(true); else moveStage.mutate(s);
+              if (s === "converted") startConversion(opp); else moveStage.mutate(s);
             }}>
               {STAGES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
             </select>
@@ -175,7 +157,14 @@ function OpportunityPage() {
             </div>
           </Field>
         </div>
-        <div className="flex justify-end"><LogInteractionButton opportunityId={opp.id} /></div>
+        <div className="flex flex-wrap justify-end gap-2">
+          {opp.stage === "converted" ? (
+            <UndoConversionButton opportunityId={opp.id} convertedAt={opp.converted_at} />
+          ) : opp.status === "open" && (
+            <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => startConversion(opp)}><Trophy /> Mark as won</Button>
+          )}
+          <LogInteractionButton opportunityId={opp.id} />
+        </div>
         <Collaborators opp={opp} partners={partners} meId={me?.partner.id} onChange={refresh} ownerName={owner?.name} />
       </header>
 
@@ -184,6 +173,11 @@ function OpportunityPage() {
           {["overview", "meetings", "tasks", "documents", "revenue", "costs", "history"].map((t) => (
             <TabsTrigger key={t} value={t}>{t === "revenue" ? "Revenue Split" : titleise(t)}</TabsTrigger>
           ))}
+          {opp.stage === "converted" && (
+            <Link to="/opportunities/$opportunityId/handover" params={{ opportunityId: opp.id }} className="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium text-accent hover:underline">
+              <FileCheck2 className="size-4" /> Handover
+            </Link>
+          )}
         </TabsList>
         <TabsContent value="overview" className="pt-5"><Overview opp={opp} partners={partners} saveField={saveField} onChange={refresh} /></TabsContent>
         <TabsContent value="meetings" className="pt-5"><InteractionTimeline opportunityId={opp.id} /></TabsContent>
@@ -194,11 +188,7 @@ function OpportunityPage() {
         <TabsContent value="history" className="pt-5"><History id={opp.id} partners={partners} /></TabsContent>
       </Tabs>
 
-      <Dialog open={convertOpen} onOpenChange={setConvertOpen}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Convert opportunity</DialogTitle><DialogDescription>Conversion flow coming soon.</DialogDescription></DialogHeader>
-        </DialogContent>
-      </Dialog>
+      <ConversionWizard opportunityId={convertId} onClose={() => setConvertId(null)} />
     </div>
   );
 }

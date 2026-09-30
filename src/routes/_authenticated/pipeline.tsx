@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState, type DragEvent } from "react";
 import { toast } from "sonner";
 
 import { EmptyState, LoadingRows, PageHeader } from "@/components/crm/page-header";
+import { ConversionWizard, useStartConversion } from "@/components/crm/conversion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -192,9 +193,12 @@ function PipelinePage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const [convertId, setConvertId] = useState<string | null>(null);
+  const startConversion = useStartConversion(setConvertId);
+
   function requestStage(opp: Opp, stage: OpportunityStage) {
     if (opp.stage === stage) return;
-    if (stage === "converted") return setPending({ kind: "convert", opp });
+    if (stage === "converted") return startConversion(opp);
     setPending({ kind: "move", opp, stage, probability: STAGES.find((s) => s.value === stage)!.probability });
   }
 
@@ -205,6 +209,7 @@ function PipelinePage() {
   return (
     <div className="space-y-5">
       {logDialog}
+      <ConversionWizard opportunityId={convertId} onClose={() => { setConvertId(null); invalidate(); }} />
       <PageHeader
         title="Pipeline"
         description="Stage-by-stage view of every live opportunity."
