@@ -133,6 +133,7 @@ export function RevenueSplit({ opp, partners, meId, onChange, suggestedCode }: {
     onSuccess: done, onError: (e) => toast.error(e.message),
   });
 
+  const suggested = suggestedCode ? templates.find((t) => t.code === suggestedCode) : undefined;
   const gross = Number(opp.estimated_gross_fee ?? 0);
   const net = gross - Number(opp.estimated_expenses ?? 0);
   const totals = { gross: 0, net: 0 };
@@ -155,6 +156,13 @@ export function RevenueSplit({ opp, partners, meId, onChange, suggestedCode }: {
         </div>
         <p className="text-xs text-muted-foreground">Current template: <strong className="text-foreground">{opp.sharing_template ?? "None"}</strong></p>
       </div>
+
+      {suggested && rows.length === 0 && !isLoading && (
+        <div className="flex flex-col gap-2 border border-highlight bg-muted/40 p-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+          <span>Suggested template: <strong>{suggested.name}</strong></span>
+          <Button size="sm" onClick={() => apply.mutate({ name: suggested.name, rows: (suggested.rows as unknown as TemplateRowDef[]) ?? [] })} disabled={apply.isPending}>Apply suggestion</Button>
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-3 text-sm">
         <span className={cn("rounded border px-3 py-1", hasGross && Math.abs(totals.gross - 100) > 0.01 && "border-warning text-warning")}>Gross rows: {totals.gross.toFixed(2)}%</span>
