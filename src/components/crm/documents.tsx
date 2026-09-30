@@ -23,11 +23,11 @@ const ALLOWED = ["pdf", "docx", "xlsx", "pptx"];
 const MAX = 20 * 1024 * 1024;
 const selectCls = "h-9 w-full border border-input bg-background px-2 text-sm";
 
-export function DocumentsPanel({ organisationId, opportunityId }: { organisationId: string; opportunityId?: string }) {
+export function DocumentsPanel({ organisationId, opportunityId, fixedType, allowed = ALLOWED }: { organisationId: string; opportunityId?: string; fixedType?: DocType; allowed?: string[] }) {
   const qc = useQueryClient();
   const { data: me } = useCurrentPartner();
   const fileRef = useRef<HTMLInputElement>(null);
-  const [docType, setDocType] = useState<DocType>(opportunityId ? "proposal" : "other");
+  const [docType, setDocType] = useState<DocType>(fixedType ?? (opportunityId ? "proposal" : "other"));
   const [notes, setNotes] = useState("");
   const key = ["documents", organisationId, opportunityId ?? "all"];
 
@@ -36,6 +36,7 @@ export function DocumentsPanel({ organisationId, opportunityId }: { organisation
     queryFn: async () => {
       let q = supabase.from("documents").select("*, partners(name), opportunities(title)").eq("organisation_id", organisationId);
       if (opportunityId) q = q.eq("opportunity_id", opportunityId);
+      if (fixedType) q = q.eq("doc_type", fixedType);
       const { data, error } = await q.order("doc_type").order("version", { ascending: false });
       if (error) throw error;
       return data;
@@ -45,7 +46,7 @@ export function DocumentsPanel({ organisationId, opportunityId }: { organisation
   const upload = useMutation({
     mutationFn: async (file: File) => {
       const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
-      if (!ALLOWED.includes(ext)) throw new Error("Only PDF, DOCX, XLSX or PPTX files");
+      if (!allowed.includes(ext)) throw new Error(`Only ${allowed.map((a) => a.toUpperCase()).join(", ")} files`);
       if (file.size > MAX) throw new Error("File is larger than 20 MB");
       if (!me) throw new Error("Not signed in");
       const path = `${organisationId}/${crypto.randomUUID()}.${ext}`;
@@ -98,7 +99,7 @@ export function DocumentsPanel({ organisationId, opportunityId }: { organisation
       <div className="grid gap-3 border bg-background p-3 sm:grid-cols-[180px_1fr_auto] sm:items-end">
         <div className="space-y-1">
           <Label htmlFor="doc-type">Type</Label>
-          <select id="doc-type" className={selectCls} value={docType} onChange={(e) => setDocType(e.target.value as DocType)}>
+          <select id="doc-type" disabled={!!fixedType} className={selectCls} value={docType} onChange={(e) => setDocType(e.target.value as DocType)}>
             {DOC_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
         </div>
@@ -109,9 +110,9 @@ export function DocumentsPanel({ organisationId, opportunityId }: { organisation
         <Button onClick={() => fileRef.current?.click()} disabled={upload.isPending}>
           <Upload className="size-4" /> {upload.isPending ? "Uploading…" : "Upload"}
         </Button>
-        <input ref={fileRef} type="file" hidden accept=".pdf,.docx,.xlsx,.pptx"
+        <input ref={fileRef} type="file" hidden accept={allowed.map((a) => `.${a}`).join(",")}
           onChange={(e) => { const f = e.target.files?.[0]; if (f) upload.mutate(f); }} />
-        <p className="text-xs text-muted-foreground sm:col-span-3">PDF, DOCX, XLSX or PPTX, up to 20 MB. Uploading the same type again saves a new version; older versions are kept.</p>
+        <p className="text-xs text-muted-foreground sm:col-span-3">{allowed.map((a) => a.toUpperCase()).join(", ")}, up to 20 MB. Uploading the same type again saves a new version; older versions are kept.</p>
       </div>
 
       {isLoading ? <LoadingRows /> : groups.length === 0 ? (

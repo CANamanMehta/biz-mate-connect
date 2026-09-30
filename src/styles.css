@@ -164,3 +164,8 @@
     letter-spacing: 0;
   }
 }
+
+@media print {
+  @page { size: A4; margin: 14mm; }
+  body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
