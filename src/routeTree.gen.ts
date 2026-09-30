@@ -24,6 +24,7 @@ import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedOrganisationsIndexRouteImport } from './routes/_authenticated/organisations/index'
 import { Route as AuthenticatedOrganisationsOrganisationIdRouteImport } from './routes/_authenticated/organisations/$organisationId'
 import { Route as AuthenticatedOpportunitiesOpportunityIdIndexRouteImport } from './routes/_authenticated/opportunities/$opportunityId.index'
+import { Route as AuthenticatedOpportunitiesOpportunityIdHandoverRouteImport } from './routes/_authenticated/opportunities/$opportunityId.handover'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -102,6 +103,12 @@ const AuthenticatedOpportunitiesOpportunityIdIndexRoute =
     path: '/opportunities/$opportunityId/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedOpportunitiesOpportunityIdHandoverRoute =
+  AuthenticatedOpportunitiesOpportunityIdHandoverRouteImport.update({
+    id: '/opportunities/$opportunityId/handover',
+    path: '/opportunities/$opportunityId/handover',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof AuthenticatedTasksRoute
   '/organisations/$organisationId': typeof AuthenticatedOrganisationsOrganisationIdRoute
   '/organisations/': typeof AuthenticatedOrganisationsIndexRoute
+  '/opportunities/$opportunityId/handover': typeof AuthenticatedOpportunitiesOpportunityIdHandoverRoute
   '/opportunities/$opportunityId/': typeof AuthenticatedOpportunitiesOpportunityIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -133,6 +141,7 @@ export interface FileRoutesByTo {
   '/tasks': typeof AuthenticatedTasksRoute
   '/organisations/$organisationId': typeof AuthenticatedOrganisationsOrganisationIdRoute
   '/organisations': typeof AuthenticatedOrganisationsIndexRoute
+  '/opportunities/$opportunityId/handover': typeof AuthenticatedOpportunitiesOpportunityIdHandoverRoute
   '/opportunities/$opportunityId': typeof AuthenticatedOpportunitiesOpportunityIdIndexRoute
 }
 export interface FileRoutesById {
@@ -151,6 +160,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
   '/_authenticated/organisations/$organisationId': typeof AuthenticatedOrganisationsOrganisationIdRoute
   '/_authenticated/organisations/': typeof AuthenticatedOrganisationsIndexRoute
+  '/_authenticated/opportunities/$opportunityId/handover': typeof AuthenticatedOpportunitiesOpportunityIdHandoverRoute
   '/_authenticated/opportunities/$opportunityId/': typeof AuthenticatedOpportunitiesOpportunityIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/organisations/$organisationId'
     | '/organisations/'
+    | '/opportunities/$opportunityId/handover'
     | '/opportunities/$opportunityId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -185,6 +196,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/organisations/$organisationId'
     | '/organisations'
+    | '/opportunities/$opportunityId/handover'
     | '/opportunities/$opportunityId'
   id:
     | '__root__'
@@ -202,6 +214,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks'
     | '/_authenticated/organisations/$organisationId'
     | '/_authenticated/organisations/'
+    | '/_authenticated/opportunities/$opportunityId/handover'
     | '/_authenticated/opportunities/$opportunityId/'
   fileRoutesById: FileRoutesById
 }
@@ -319,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOpportunitiesOpportunityIdIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/opportunities/$opportunityId/handover': {
+      id: '/_authenticated/opportunities/$opportunityId/handover'
+      path: '/opportunities/$opportunityId/handover'
+      fullPath: '/opportunities/$opportunityId/handover'
+      preLoaderRoute: typeof AuthenticatedOpportunitiesOpportunityIdHandoverRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -333,6 +353,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
   AuthenticatedOrganisationsOrganisationIdRoute: typeof AuthenticatedOrganisationsOrganisationIdRoute
   AuthenticatedOrganisationsIndexRoute: typeof AuthenticatedOrganisationsIndexRoute
+  AuthenticatedOpportunitiesOpportunityIdHandoverRoute: typeof AuthenticatedOpportunitiesOpportunityIdHandoverRoute
   AuthenticatedOpportunitiesOpportunityIdIndexRoute: typeof AuthenticatedOpportunitiesOpportunityIdIndexRoute
 }
 
@@ -348,6 +369,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOrganisationsOrganisationIdRoute:
     AuthenticatedOrganisationsOrganisationIdRoute,
   AuthenticatedOrganisationsIndexRoute: AuthenticatedOrganisationsIndexRoute,
+  AuthenticatedOpportunitiesOpportunityIdHandoverRoute:
+    AuthenticatedOpportunitiesOpportunityIdHandoverRoute,
   AuthenticatedOpportunitiesOpportunityIdIndexRoute:
     AuthenticatedOpportunitiesOpportunityIdIndexRoute,
 }
