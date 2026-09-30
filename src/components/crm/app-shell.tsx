@@ -61,8 +61,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-muted/20">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-border bg-background lg:flex">
+    <div className="min-h-screen bg-muted/20 print:bg-background">
+      <aside className="print:hidden fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-border bg-background lg:flex">
         <div className="flex items-center gap-3 border-b border-border px-5 py-4">
           <div className="flex size-9 shrink-0 items-center justify-center bg-primary font-display text-xs font-semibold text-primary-foreground">
             AOM
@@ -104,8 +104,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      <div className="lg:pl-60">
-        <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
+      <div className="lg:pl-60 print:pl-0">
+        <header className="print:hidden sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
           <div className="flex items-center gap-3 px-4 py-3 lg:px-8">
             <div className="flex size-9 shrink-0 items-center justify-center bg-primary font-display text-xs font-semibold text-primary-foreground lg:hidden">
               AOM
@@ -123,17 +123,17 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className="px-4 pb-28 pt-6 sm:px-6 lg:px-8 lg:pb-16">{children}</main>
+        <main className="px-4 pb-28 pt-6 sm:px-6 lg:px-8 lg:pb-16 print:p-0">{children}</main>
       </div>
 
       <Button
         onClick={() => setEnquiryOpen(true)}
-        className="fixed bottom-20 right-4 z-30 h-12 bg-accent px-5 text-accent-foreground shadow-lg hover:bg-accent/90 lg:bottom-8 lg:right-8"
+        className="print:hidden fixed bottom-20 right-4 z-30 h-12 bg-accent px-5 text-accent-foreground shadow-lg hover:bg-accent/90 lg:bottom-8 lg:right-8"
       >
         <Plus aria-hidden="true" /> New Enquiry
       </Button>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background pb-[env(safe-area-inset-bottom)] lg:hidden">
+      <nav className="print:hidden fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background pb-[env(safe-area-inset-bottom)] lg:hidden">
         <div className="grid grid-cols-5">
           {primaryItems.map((item) => (
             <Link

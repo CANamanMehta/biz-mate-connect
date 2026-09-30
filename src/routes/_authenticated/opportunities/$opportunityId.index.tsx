@@ -49,7 +49,7 @@ import {
 import { DocumentsPanel } from "@/components/crm/documents";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/opportunities/$opportunityId")({
+export const Route = createFileRoute("/_authenticated/opportunities/$opportunityId/")({
   head: () => ({
     meta: [
       { title: "Opportunity | AOM CRM" },
