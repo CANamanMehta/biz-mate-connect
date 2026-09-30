@@ -12,3 +12,4 @@
 - Cross-sell snoozing is persisted on each suggestion and changed through an authenticated access-checked RPC so hidden ideas return automatically.
 - Opportunity stage/status/probability change only via SECURITY DEFINER RPCs that set `aom.approved_change` (trigger `opportunities_guard`); why: rules hold even for direct API updates.
 - Orange: `accent` = #BA5E22 for fills/text with white; `highlight` = #E8762B for lines, rings, dots only; why: contrast.
+- Deal conversion only via SECURITY DEFINER `convert_opportunity` / `undo_conversion` (flag 'conversion'); why: one transaction for stage, client status, services, renewal and notifications.
