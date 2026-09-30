@@ -674,15 +674,18 @@ export type Database = {
           conflict_check_at: string | null
           conflict_check_by: string | null
           conflict_check_confirmed: boolean
+          conflict_check_note: string | null
           converted_at: string | null
           created_at: string
           created_by: string | null
+          engagement_start_date: string | null
           estimated_expenses: number
           estimated_gross_fee: number
           estimated_net_profit: number | null
           execution_mode: Database["public"]["Enums"]["execution_mode"] | null
           expected_close_date: string | null
           id: string
+          is_recurring_engagement: boolean
           is_restricted: boolean
           last_activity_date: string | null
           lost_note: string | null
@@ -694,6 +697,7 @@ export type Database = {
           owner_partner_id: string
           probability: number
           referral_contact_id: string | null
+          renewal_of_opportunity_id: string | null
           requirements: string | null
           research_due_date: string | null
           research_status: Database["public"]["Enums"]["research_status"]
@@ -716,15 +720,18 @@ export type Database = {
           conflict_check_at?: string | null
           conflict_check_by?: string | null
           conflict_check_confirmed?: boolean
+          conflict_check_note?: string | null
           converted_at?: string | null
           created_at?: string
           created_by?: string | null
+          engagement_start_date?: string | null
           estimated_expenses?: number
           estimated_gross_fee?: number
           estimated_net_profit?: number | null
           execution_mode?: Database["public"]["Enums"]["execution_mode"] | null
           expected_close_date?: string | null
           id?: string
+          is_recurring_engagement?: boolean
           is_restricted?: boolean
           last_activity_date?: string | null
           lost_note?: string | null
@@ -736,6 +743,7 @@ export type Database = {
           owner_partner_id: string
           probability?: number
           referral_contact_id?: string | null
+          renewal_of_opportunity_id?: string | null
           requirements?: string | null
           research_due_date?: string | null
           research_status?: Database["public"]["Enums"]["research_status"]
@@ -758,15 +766,18 @@ export type Database = {
           conflict_check_at?: string | null
           conflict_check_by?: string | null
           conflict_check_confirmed?: boolean
+          conflict_check_note?: string | null
           converted_at?: string | null
           created_at?: string
           created_by?: string | null
+          engagement_start_date?: string | null
           estimated_expenses?: number
           estimated_gross_fee?: number
           estimated_net_profit?: number | null
           execution_mode?: Database["public"]["Enums"]["execution_mode"] | null
           expected_close_date?: string | null
           id?: string
+          is_recurring_engagement?: boolean
           is_restricted?: boolean
           last_activity_date?: string | null
           lost_note?: string | null
@@ -778,6 +789,7 @@ export type Database = {
           owner_partner_id?: string
           probability?: number
           referral_contact_id?: string | null
+          renewal_of_opportunity_id?: string | null
           requirements?: string | null
           research_due_date?: string | null
           research_status?: Database["public"]["Enums"]["research_status"]
@@ -831,6 +843,13 @@ export type Database = {
             columns: ["referral_contact_id"]
             isOneToOne: false
             referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunities_renewal_of_opportunity_id_fkey"
+            columns: ["renewal_of_opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
             referencedColumns: ["id"]
           },
         ]
@@ -1406,6 +1425,21 @@ export type Database = {
           recurring_task_id: string
         }[]
       }
+      convert_opportunity: {
+        Args: {
+          _conflict_confirmed: boolean
+          _conflict_note: string
+          _final_expenses: number
+          _final_fee: number
+          _opportunity_id: string
+          _override_reason?: string
+          _recurring: boolean
+          _relationship_owner_partner_id: string
+          _service_line_ids: string[]
+          _start_date: string
+        }
+        Returns: string
+      }
       create_cross_sell_opportunity: {
         Args: {
           _organisation_id: string
@@ -1593,6 +1627,10 @@ export type Database = {
       }
       snooze_cross_sell: {
         Args: { _suggestion_id: string; _until: string }
+        Returns: undefined
+      }
+      undo_conversion: {
+        Args: { _opportunity_id: string; _reason: string }
         Returns: undefined
       }
       update_enquiry_stage: {
