@@ -1584,6 +1584,8 @@ export type Database = {
           owner_name: string
         }[]
       }
+      run_daily_automations: { Args: never; Returns: Json }
+      run_daily_automations_now: { Args: never; Returns: Json }
       search_crm: {
         Args: { _query: string }
         Returns: {
