@@ -20,6 +20,7 @@ import { useState, type ReactNode } from "react";
 import { GlobalSearch } from "@/components/crm/global-search";
 import { NewEnquiryDialog } from "@/components/crm/new-enquiry-dialog";
 import { NewTargetDialog } from "@/components/crm/new-target-dialog";
+import { NotificationBell } from "@/components/crm/notification-bell";
 import { QuickAddTaskDialog } from "@/components/crm/tasks";
 import { InstallAppButton } from "@/components/pwa";
 import { Button } from "@/components/ui/button";
@@ -114,6 +115,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <GlobalSearch />
             </div>
             <div className="hidden flex-1 lg:block" />
+            <NotificationBell />
             <Button variant="outline" size="sm" onClick={() => setTargetOpen(true)} aria-label="New target">
               <Crosshair aria-hidden="true" /> <span className="hidden sm:inline">New Target</span>
             </Button>
