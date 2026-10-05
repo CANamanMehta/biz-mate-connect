@@ -155,6 +155,13 @@
       "when": 1790744275546,
       "tag": "0021_conversion_flow",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1791192476474,
+      "tag": "0022_daily_automations",
+      "breakpoints": true
     }
   ]
 }
