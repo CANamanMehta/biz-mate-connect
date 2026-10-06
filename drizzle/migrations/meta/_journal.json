@@ -162,6 +162,13 @@
       "when": 1791192476474,
       "tag": "0022_daily_automations",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1791258895307,
+      "tag": "0023_notification_triggers",
+      "breakpoints": true
     }
   ]
 }
