@@ -580,6 +580,7 @@ export type Database = {
           duration_minutes: number | null
           id: string
           location_or_link: string | null
+          meet_link: string | null
           meeting_date: string
           next_step: string
           next_step_date: string
@@ -588,6 +589,9 @@ export type Database = {
           organisation_id: string
           outcome: string | null
           requirements_identified: string | null
+          scheduled_end: string | null
+          scheduled_start: string | null
+          status: string | null
           summary: string | null
           type: Database["public"]["Enums"]["interaction_type"]
           updated_at: string
@@ -602,6 +606,7 @@ export type Database = {
           duration_minutes?: number | null
           id?: string
           location_or_link?: string | null
+          meet_link?: string | null
           meeting_date: string
           next_step: string
           next_step_date: string
@@ -610,6 +615,9 @@ export type Database = {
           organisation_id: string
           outcome?: string | null
           requirements_identified?: string | null
+          scheduled_end?: string | null
+          scheduled_start?: string | null
+          status?: string | null
           summary?: string | null
           type: Database["public"]["Enums"]["interaction_type"]
           updated_at?: string
@@ -624,6 +632,7 @@ export type Database = {
           duration_minutes?: number | null
           id?: string
           location_or_link?: string | null
+          meet_link?: string | null
           meeting_date?: string
           next_step?: string
           next_step_date?: string
@@ -632,6 +641,9 @@ export type Database = {
           organisation_id?: string
           outcome?: string | null
           requirements_identified?: string | null
+          scheduled_end?: string | null
+          scheduled_start?: string | null
+          status?: string | null
           summary?: string | null
           type?: Database["public"]["Enums"]["interaction_type"]
           updated_at?: string

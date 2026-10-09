@@ -176,6 +176,13 @@
       "when": 1791541898766,
       "tag": "0024_google_connections",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1791542124382,
+      "tag": "0025_meetings_scheduling",
+      "breakpoints": true
     }
   ]
 }
