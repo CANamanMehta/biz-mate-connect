@@ -93,6 +93,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             {data?.partner.name ?? "Partner"}
           </p>
           <p className="truncate px-3 text-xs text-muted-foreground">{data?.partner.branch}</p>
+          <Button asChild variant="ghost" size="sm" className="mt-2 w-full justify-start">
+            <Link to="/settings">
+              <Settings aria-hidden="true" /> My settings
+            </Link>
+          </Button>
           <InstallAppButton className="mt-2 w-full justify-start" />
           <Button
             variant="ghost"
@@ -173,6 +178,13 @@ export function AppShell({ children }: { children: ReactNode }) {
                 {item.label}
               </Link>
             ))}
+            <Link
+              to="/settings"
+              onClick={() => setMoreOpen(false)}
+              className="flex items-center gap-3 border-b border-border px-5 py-3 text-sm text-foreground"
+            >
+              <Settings className="size-4" aria-hidden="true" /> My settings
+            </Link>
             <button
               type="button"
               onClick={handleSignOut}

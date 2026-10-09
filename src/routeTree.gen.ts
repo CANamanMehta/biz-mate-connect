@@ -20,9 +20,12 @@ import { Route as AuthenticatedEnquiriesRouteImport } from './routes/_authentica
 import { Route as AuthenticatedMeetingsRouteImport } from './routes/_authenticated/meetings'
 import { Route as AuthenticatedPipelineRouteImport } from './routes/_authenticated/pipeline'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
 import { Route as AuthenticatedOrganisationsIndexRouteImport } from './routes/_authenticated/organisations/index'
 import { Route as AuthenticatedOrganisationsOrganisationIdRouteImport } from './routes/_authenticated/organisations/$organisationId'
+import { Route as ApiGoogleCallbackRouteImport } from './routes/api/google/callback'
+import { Route as ApiGoogleConnectRouteImport } from './routes/api/google/connect'
 import { Route as AuthenticatedOpportunitiesOpportunityIdIndexRouteImport } from './routes/_authenticated/opportunities/$opportunityId.index'
 import { Route as AuthenticatedOpportunitiesOpportunityIdHandoverRouteImport } from './routes/_authenticated/opportunities/$opportunityId.handover'
 
@@ -80,6 +83,11 @@ const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
   path: '/reports',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
@@ -97,6 +105,16 @@ const AuthenticatedOrganisationsOrganisationIdRoute =
     path: '/organisations/$organisationId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiGoogleCallbackRoute = ApiGoogleCallbackRouteImport.update({
+  id: '/api/google/callback',
+  path: '/api/google/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiGoogleConnectRoute = ApiGoogleConnectRouteImport.update({
+  id: '/api/google/connect',
+  path: '/api/google/connect',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedOpportunitiesOpportunityIdIndexRoute =
   AuthenticatedOpportunitiesOpportunityIdIndexRouteImport.update({
     id: '/opportunities/$opportunityId/',
@@ -121,8 +139,11 @@ export interface FileRoutesByFullPath {
   '/meetings': typeof AuthenticatedMeetingsRoute
   '/pipeline': typeof AuthenticatedPipelineRoute
   '/reports': typeof AuthenticatedReportsRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/organisations/$organisationId': typeof AuthenticatedOrganisationsOrganisationIdRoute
+  '/api/google/callback': typeof ApiGoogleCallbackRoute
+  '/api/google/connect': typeof ApiGoogleConnectRoute
   '/organisations/': typeof AuthenticatedOrganisationsIndexRoute
   '/opportunities/$opportunityId/handover': typeof AuthenticatedOpportunitiesOpportunityIdHandoverRoute
   '/opportunities/$opportunityId/': typeof AuthenticatedOpportunitiesOpportunityIdIndexRoute
@@ -138,8 +159,11 @@ export interface FileRoutesByTo {
   '/meetings': typeof AuthenticatedMeetingsRoute
   '/pipeline': typeof AuthenticatedPipelineRoute
   '/reports': typeof AuthenticatedReportsRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/organisations/$organisationId': typeof AuthenticatedOrganisationsOrganisationIdRoute
+  '/api/google/callback': typeof ApiGoogleCallbackRoute
+  '/api/google/connect': typeof ApiGoogleConnectRoute
   '/organisations': typeof AuthenticatedOrganisationsIndexRoute
   '/opportunities/$opportunityId/handover': typeof AuthenticatedOpportunitiesOpportunityIdHandoverRoute
   '/opportunities/$opportunityId': typeof AuthenticatedOpportunitiesOpportunityIdIndexRoute
@@ -157,8 +181,11 @@ export interface FileRoutesById {
   '/_authenticated/meetings': typeof AuthenticatedMeetingsRoute
   '/_authenticated/pipeline': typeof AuthenticatedPipelineRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
   '/_authenticated/organisations/$organisationId': typeof AuthenticatedOrganisationsOrganisationIdRoute
+  '/api/google/callback': typeof ApiGoogleCallbackRoute
+  '/api/google/connect': typeof ApiGoogleConnectRoute
   '/_authenticated/organisations/': typeof AuthenticatedOrganisationsIndexRoute
   '/_authenticated/opportunities/$opportunityId/handover': typeof AuthenticatedOpportunitiesOpportunityIdHandoverRoute
   '/_authenticated/opportunities/$opportunityId/': typeof AuthenticatedOpportunitiesOpportunityIdIndexRoute
@@ -176,8 +203,11 @@ export interface FileRouteTypes {
     | '/meetings'
     | '/pipeline'
     | '/reports'
+    | '/settings'
     | '/tasks'
     | '/organisations/$organisationId'
+    | '/api/google/callback'
+    | '/api/google/connect'
     | '/organisations/'
     | '/opportunities/$opportunityId/handover'
     | '/opportunities/$opportunityId/'
@@ -193,8 +223,11 @@ export interface FileRouteTypes {
     | '/meetings'
     | '/pipeline'
     | '/reports'
+    | '/settings'
     | '/tasks'
     | '/organisations/$organisationId'
+    | '/api/google/callback'
+    | '/api/google/connect'
     | '/organisations'
     | '/opportunities/$opportunityId/handover'
     | '/opportunities/$opportunityId'
@@ -211,8 +244,11 @@ export interface FileRouteTypes {
     | '/_authenticated/meetings'
     | '/_authenticated/pipeline'
     | '/_authenticated/reports'
+    | '/_authenticated/settings'
     | '/_authenticated/tasks'
     | '/_authenticated/organisations/$organisationId'
+    | '/api/google/callback'
+    | '/api/google/connect'
     | '/_authenticated/organisations/'
     | '/_authenticated/opportunities/$opportunityId/handover'
     | '/_authenticated/opportunities/$opportunityId/'
@@ -223,6 +259,8 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiGoogleCallbackRoute: typeof ApiGoogleCallbackRoute
+  ApiGoogleConnectRoute: typeof ApiGoogleConnectRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -304,6 +342,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedReportsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/tasks': {
       id: '/_authenticated/tasks'
       path: '/tasks'
@@ -324,6 +369,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/organisations/$organisationId'
       preLoaderRoute: typeof AuthenticatedOrganisationsOrganisationIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/google/callback': {
+      id: '/api/google/callback'
+      path: '/api/google/callback'
+      fullPath: '/api/google/callback'
+      preLoaderRoute: typeof ApiGoogleCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/google/connect': {
+      id: '/api/google/connect'
+      path: '/api/google/connect'
+      fullPath: '/api/google/connect'
+      preLoaderRoute: typeof ApiGoogleConnectRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/opportunities/$opportunityId/': {
       id: '/_authenticated/opportunities/$opportunityId/'
@@ -350,6 +409,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMeetingsRoute: typeof AuthenticatedMeetingsRoute
   AuthenticatedPipelineRoute: typeof AuthenticatedPipelineRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
   AuthenticatedOrganisationsOrganisationIdRoute: typeof AuthenticatedOrganisationsOrganisationIdRoute
   AuthenticatedOrganisationsIndexRoute: typeof AuthenticatedOrganisationsIndexRoute
@@ -365,6 +425,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMeetingsRoute: AuthenticatedMeetingsRoute,
   AuthenticatedPipelineRoute: AuthenticatedPipelineRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,
   AuthenticatedOrganisationsOrganisationIdRoute:
     AuthenticatedOrganisationsOrganisationIdRoute,
@@ -383,6 +444,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiGoogleCallbackRoute: ApiGoogleCallbackRoute,
+  ApiGoogleConnectRoute: ApiGoogleConnectRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
