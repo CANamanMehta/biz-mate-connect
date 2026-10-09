@@ -83,7 +83,7 @@ export const scheduleMeeting = createServerFn({ method: "POST" })
       attendees: emails.map((email) => ({ email })),
     };
     if (data.addMeet) {
-      event.conferenceData = { createRequest: { requestId: crypto.randomUUID(), conferenceSolutionKey: { type: "hangoutsMeet" } } };
+      event["conferenceData"] = { createRequest: { requestId: crypto.randomUUID(), conferenceSolutionKey: { type: "hangoutsMeet" } } };
     }
     const res = await fetch(
       "https://www.googleapis.com/calendar/v3/calendars/primary/events?sendUpdates=all&conferenceDataVersion=1",
