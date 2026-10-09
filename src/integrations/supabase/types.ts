@@ -379,6 +379,44 @@ export type Database = {
           },
         ]
       }
+      google_connections: {
+        Row: {
+          access_token: string | null
+          connected_at: string
+          expires_at: string | null
+          google_email: string | null
+          id: string
+          partner_id: string
+          refresh_token: string | null
+        }
+        Insert: {
+          access_token?: string | null
+          connected_at?: string
+          expires_at?: string | null
+          google_email?: string | null
+          id?: string
+          partner_id: string
+          refresh_token?: string | null
+        }
+        Update: {
+          access_token?: string | null
+          connected_at?: string
+          expires_at?: string | null
+          google_email?: string | null
+          id?: string
+          partner_id?: string
+          refresh_token?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "google_connections_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: true
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_costs: {
         Row: {
           amount_inr: number | null
@@ -1574,6 +1612,14 @@ export type Database = {
           _stage: Database["public"]["Enums"]["opportunity_stage"]
         }
         Returns: undefined
+      }
+      my_google_status: {
+        Args: never
+        Returns: {
+          connected: boolean
+          connected_at: string
+          google_email: string
+        }[]
       }
       normalise_business_name: { Args: { _value: string }; Returns: string }
       restricted_pursuit_notices: {
