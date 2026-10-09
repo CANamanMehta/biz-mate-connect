@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { ContactBadges } from "@/routes/_authenticated/contacts";
 import { InteractionTimeline, LogInteractionButton } from "@/components/crm/interactions";
+import { ScheduleMeetingButton } from "@/components/crm/schedule-meeting";
 import { ServiceChip } from "@/components/crm/cross-sell";
 import { EmptyState, LoadingRows, PageHeader } from "@/components/crm/page-header";
 import { Button } from "@/components/ui/button";
@@ -184,7 +185,7 @@ function OrganisationDetailPage() {
           titleise(organisation.relationship_owner_type) ??
           "Unassigned"
         }`}
-        actions={<LogInteractionButton organisationId={organisationId} />}
+        actions={<><ScheduleMeetingButton organisationId={organisationId} /><LogInteractionButton organisationId={organisationId} /></>}
       />
 
       <Tabs defaultValue="overview">

@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { InteractionTimeline, LogInteractionButton } from "@/components/crm/interactions";
+import { ScheduleMeetingButton, UpcomingMeetings } from "@/components/crm/schedule-meeting";
 import { EmptyState, LoadingRows } from "@/components/crm/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -163,6 +164,7 @@ function OpportunityPage() {
           ) : opp.status === "open" && (
             <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => startConversion(opp)}><Trophy /> Mark as won</Button>
           )}
+          <ScheduleMeetingButton organisationId={opp.organisation_id} opportunityId={opp.id} />
           <LogInteractionButton opportunityId={opp.id} />
         </div>
         <Collaborators opp={opp} partners={partners} meId={me?.partner.id} onChange={refresh} ownerName={owner?.name} />
@@ -180,7 +182,7 @@ function OpportunityPage() {
           )}
         </TabsList>
         <TabsContent value="overview" className="pt-5"><Overview opp={opp} partners={partners} saveField={saveField} onChange={refresh} /></TabsContent>
-        <TabsContent value="meetings" className="pt-5"><InteractionTimeline opportunityId={opp.id} /></TabsContent>
+        <TabsContent value="meetings" className="space-y-5 pt-5"><UpcomingMeetings opportunityId={opp.id} /><InteractionTimeline opportunityId={opp.id} /></TabsContent>
         <TabsContent value="tasks" className="pt-5"><Tasks id={opp.id} partners={partners} /></TabsContent>
         <TabsContent value="documents" className="pt-5"><DocumentsPanel organisationId={opp.organisation_id} opportunityId={opp.id} /></TabsContent>
         <TabsContent value="revenue" className="pt-5"><RevenueSplit opp={opp} partners={partners} meId={me?.partner.id} onChange={refresh} /></TabsContent>

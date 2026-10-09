@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { LogInteractionDialog, MEETING_SELECT, type MeetingRow, INTERACTION_TYPES } from "@/components/crm/interactions";
 import { PageHeader } from "@/components/crm/page-header";
+import { UpcomingMeetings } from "@/components/crm/schedule-meeting";
 import { TaskItem, useCompleteTask, useTasks } from "@/components/crm/tasks";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -156,6 +157,8 @@ function DashboardPage() {
         <Section title="Today's & overdue follow-ups" count={v.followUps.length} to="/tasks">
           {v.followUps.slice(0, 5).map((t) => <TaskItem key={t.id} task={t} onComplete={start} compact />)}
         </Section>
+
+        <UpcomingMeetings />
 
         <Section title="This week's meetings" count={v.meetings.length} to="/meetings">
           {v.meetings.slice(0, 5).map((m) => {
